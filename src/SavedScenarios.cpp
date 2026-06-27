@@ -33,7 +33,9 @@ void Scenario::LoadScenario(UI& ui){
             LoadedScenarioName = "VARIOUS BOUNCE";
             this->NewWall(Wall((Vector2){0, (float)ui.WindowY()-50.0f}, (Vector2){(float)ui.WindowX()/2, 50.0f}, DARKGREEN, 0.99f));
             this->NewWall(Wall((Vector2){(float)ui.WindowX()/2, (float)ui.WindowY()-50.0f}, (Vector2){(float)ui.WindowX()/2, 50.0f}, DARKBLUE, 0.50f));
-        break;
+            this->NewBall(Ball{(Vector2){ui.WindowX()/4, 50},(Vector2){0,0}, 10, WHITE});
+            this->NewBall(Ball{(Vector2){3*ui.WindowX()/4, 50},(Vector2){0,0}, 10, WHITE});
+       break;
 
         //SCENARIO THE WAVE
         case SavedScenarios::THE_WAVE:
