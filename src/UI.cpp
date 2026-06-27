@@ -103,7 +103,7 @@ void UI::ProcessInput(Scenario& CurrentScenario){
         CurrentScenario.Balls.push_back(newBall);
     }
 
-    if(IsKeyPressed(KEY_S)){
+    if(IsKeyPressed(KEY_TAB)){
         ToggleStatus();
     }
 }

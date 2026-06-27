@@ -39,7 +39,6 @@ int main(){
     }
     CloseWindow();
     return 0;
-    //Test
 }
 
 
