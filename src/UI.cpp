@@ -2,6 +2,7 @@
 #include<raylib.h>
 #include<string>
 #include "Scenario.h"
+#include <ranges>
 
 UI::UI(int windowX, int windowY, bool statusBarEnabled,  int desiredScenario, int statusBarHeight = 30)
     : _windowX(windowX), _windowY(windowY), _statusBarEnabled(statusBarEnabled), DesiredScenario(desiredScenario), _statusBarHeight(statusBarHeight) 
@@ -50,17 +51,18 @@ void UI::_drawStatusBar(Scenario& currentScenario)
 }
 
 void UI::Draw(Scenario& currentScenario){
-      //Draw All Walls
-    for(int i=0; i<(int)currentScenario.Walls.size(); i++){
-        DrawRectangleV(currentScenario.Walls[i].Position, currentScenario.Walls[i].Size, currentScenario.Walls[i].WallColor);
+    //Draw All Walls
+    for(Wall& wall : currentScenario.Walls){
+        DrawRectangleV(wall.Position, wall.Size, wall.WallColor);
     }
     //Draw All Balls in the List
-    for(int i=0; i<(int)currentScenario.Balls.size(); i++){
-        if(currentScenario.Balls[i].Position.y > WindowY()){
-            currentScenario.RemoveBall(i);
+    for(int index = 0; Ball& ball : currentScenario.Balls){
+        if(ball.Position.y > WindowY()){
+            currentScenario.RemoveBallID(index);
             break;
         }
-        DrawCircleV(currentScenario.Balls[i].Position, currentScenario.Balls[i].Radius, currentScenario.Balls[i].BallColor);
+        DrawCircleV(ball.Position, ball.Radius, ball.BallColor);
+        index++;
     }
     
     if(_statusBarEnabled){

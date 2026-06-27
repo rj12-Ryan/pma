@@ -18,6 +18,7 @@ class Scenario{
             APPOSING_WALLS,
             THE_WAVE,
             VARIOUS_BOUNCE,
+            MANY_BALLS,
             Count //Sentinel value must be last
         };
         enum class ScenarioFlags : u_int32_t{
@@ -30,7 +31,8 @@ class Scenario{
         std::vector<Wall> Walls;
 
         void NewBall(Ball ball);
-        void RemoveBall(int ballIndex);
+        void RemoveBallID(int ballIndex);
+        void RemoveBall(Ball* ball);
         void NewWall(Wall wall);
         void RemoveWall(int wallIndex);
         void ClearBalls();

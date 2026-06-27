@@ -1,0 +1,66 @@
+#include "Scenario.h"
+#include "UI.h"
+#include <cassert>
+#include "Wall.h"
+
+void Scenario::LoadScenario(UI& ui){
+    //RESET SCENARIO
+    Balls.clear();
+    Walls.clear();
+    flags = 0;
+
+    switch(static_cast<SavedScenarios>(ui.DesiredScenario)){
+        //SCENARIO COUNT (UNREACHABLE)
+        case SavedScenarios::Count:
+            //we cannot reach this state because Count is not a valid Saved Scenario
+            assert(false);
+        break;
+
+        //SCENARIO EMPTY
+        case SavedScenarios::EMPTY:
+            LoadedScenarioName = "EMPTY";
+        break;
+
+        //SCENARIO APPOSING WALLS
+        case SavedScenarios::APPOSING_WALLS:
+            LoadedScenarioName = "APPOSING WALLS";
+            this->NewWall({{30,0},{100,1000},DARKGREEN, 0.99});
+            this->NewWall({{600,100},{100,950},DARKGREEN, 0.99});
+        break;
+
+        //SCENARIO VARIOUS BOUNCE
+        case SavedScenarios::VARIOUS_BOUNCE:
+            LoadedScenarioName = "VARIOUS BOUNCE";
+            this->NewWall(Wall((Vector2){0, (float)ui.WindowY()-50.0f}, (Vector2){(float)ui.WindowX()/2, 50.0f}, DARKGREEN, 0.99f));
+            this->NewWall(Wall((Vector2){(float)ui.WindowX()/2, (float)ui.WindowY()-50.0f}, (Vector2){(float)ui.WindowX()/2, 50.0f}, DARKBLUE, 0.50f));
+        break;
+
+        //SCENARIO THE WAVE
+        case SavedScenarios::THE_WAVE:
+        {
+            LoadedScenarioName = "THE WAVE";
+            this->SetFlag(ScenarioFlags::RainbowBalls);
+            this->NewWall({{0, (float)ui.WindowY()-50}, {(float)ui.WindowX(), 50}, DARKGREEN, 0.99});
+            int ballR = 10;
+            int ballCount = ui.WindowX() / (ballR*2);
+            for(int i=0; i<ballCount; i++){
+                this->NewBall({(Vector2){(float)ballR+(2*ballR)*i, 10.0f+(float)(0.5*ballR*i)}, (Vector2){0,0}, ballR, BLUE});
+            }
+        break;
+        }
+
+        //SCENARIO MANY BALLS
+        case SavedScenarios::MANY_BALLS:
+        {
+            LoadedScenarioName = "MANY BALLS";
+            this->SetFlag(ScenarioFlags::RainbowBalls);
+            this->NewWall({(Vector2){0, (float)ui.WindowY()-50}, (Vector2){(float)ui.WindowX(), 50}, YELLOW, 1.0f});
+            for(int i=0; i<452; i++){
+                float r = (float)(GetRandomValue(10, ui.WindowX()-10));
+                float r2 = (float)(GetRandomValue(10, ui.WindowY()-100));
+                this->NewBall(Ball{(Vector2){r, 10 + r2},(Vector2){0,0}, 10, BLUE});
+            }
+        break;
+        }
+    }
+}
