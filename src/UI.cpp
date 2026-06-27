@@ -4,7 +4,7 @@
 #include "Scenario.h"
 #include <ranges>
 
-UI::UI(int windowX, int windowY, bool statusBarEnabled,  int desiredScenario, int statusBarHeight = 30)
+UI::UI(int windowX, int windowY, bool statusBarEnabled, int statusBarHeight, int desiredScenario)
     : _windowX(windowX), _windowY(windowY), _statusBarEnabled(statusBarEnabled), DesiredScenario(desiredScenario), _statusBarHeight(statusBarHeight) 
 {}
 

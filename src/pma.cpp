@@ -15,12 +15,11 @@
 #define GRAVITY 700
 #define TARGET_PHYSICS_PER_SECOND 1000.0f
 
-
 Scenario CurrentScenario;
 
 int main(){
     //CREATE A UI
-    UI ui(1920, 1080, true, static_cast<int>(Scenario::SavedScenarios::EMPTY), 30);
+    UI ui(1920, 1080, true, 30, static_cast<int>(Scenario::SavedScenarios::EMPTY));
     ui.InitPMAWindow();
 
     //LOAD SCENARIO
