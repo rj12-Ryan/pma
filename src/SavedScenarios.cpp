@@ -8,8 +8,8 @@ void Scenario::LoadScenario(UI& ui){
     Balls.clear();
     Walls.clear();
     flags = 0;
-
-    switch(static_cast<SavedScenarios>(ui.DesiredScenario)){
+    SavedScenarios ss = static_cast<SavedScenarios>(ui.DesiredScenario);
+    switch(ss){
         //SCENARIO COUNT (UNREACHABLE)
         case SavedScenarios::Count:
             //we cannot reach this state because Count is not a valid Saved Scenario

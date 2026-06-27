@@ -14,6 +14,7 @@ void PhysicsEngine::_updatePhysics(){
             b.BallColor = (Color){static_cast<unsigned char>((b.Position.y/3)),static_cast<unsigned char>((b.Position.y/2)),static_cast<unsigned char>((b.Position.y)),255};
         }
         b.ApplyAcceleration({0, (float)Gravity}, DT);
+        b.Age++;
     }
     _ballWallCollision();
 }

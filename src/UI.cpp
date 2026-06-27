@@ -51,6 +51,8 @@ void UI::_drawStatusBar(Scenario& currentScenario)
 }
 
 void UI::Draw(Scenario& currentScenario){
+    _drawCounter++;
+
     //Draw All Walls
     for(Wall& wall : currentScenario.Walls){
         DrawRectangleV(wall.Position, wall.Size, wall.WallColor);
@@ -85,7 +87,7 @@ void UI::ProcessInput(Scenario& CurrentScenario){
         DesiredScenario = static_cast<int>(CurrentScenario.PreviousScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario)));
         CurrentScenario.LoadScenario(*this);
     }
-    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)){
+    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
         Vector2 mouse = GetMousePosition();
         float directionalVelocity = 1500;
         Vector2 v = {0,0};
@@ -101,9 +103,36 @@ void UI::ProcessInput(Scenario& CurrentScenario){
             if(IsKeyDown(KEY_D)){
                 v = {v.x + directionalVelocity, v.y + 0};
             }
-        Ball newBall(mouse, v, 10, WHITE);
-        CurrentScenario.Balls.push_back(newBall);
+        CurrentScenario.NewBall(Ball{mouse, v, 10, WHITE});
     }
+
+    //Right Click Fountain
+    bool prevBallOldEnough;
+    if(CurrentScenario.Balls.empty()){
+        prevBallOldEnough = true;
+    }
+    else{
+        prevBallOldEnough = (CurrentScenario.Balls.back().Age>50);
+    }
+    if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && prevBallOldEnough){
+        Vector2 mouse = GetMousePosition();
+        float directionalVelocity = 1500;
+        Vector2 v = {0,0};
+            if(IsKeyDown(KEY_W)){
+                v = {v.x + 0, v.y + -directionalVelocity}; 
+            }
+            if(IsKeyDown(KEY_A)){
+                v = {v.x + -directionalVelocity,v.y + 0};
+            }
+            if(IsKeyDown(KEY_S)){
+                v = {v.x + 0, v.y + directionalVelocity};
+            }
+            if(IsKeyDown(KEY_D)){
+                v = {v.x + directionalVelocity, v.y + 0};
+            }
+            CurrentScenario.NewBall(Ball{mouse, v, 10, WHITE});
+    }
+
 
     if(IsKeyPressed(KEY_TAB)){
         ToggleStatus();

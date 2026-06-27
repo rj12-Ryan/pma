@@ -11,6 +11,7 @@ class UI{
         int _windowX;
         int _windowY;
         void _drawStatusBar(Scenario&);
+        int _drawCounter = 0;
     public:
         UI(int, int, bool, int, int);
         int WindowX();
