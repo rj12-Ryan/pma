@@ -57,15 +57,6 @@ void UI::Draw(Scenario& currentScenario){
     for(Wall& wall : currentScenario.Walls){
         DrawRectangleV(wall.Position, wall.Size, wall.WallColor);
     }
-    //Draw All Balls in the List
-    for(int index = 0; Ball& ball : currentScenario.Balls){
-        if(ball.Position.y > WindowY()){
-            currentScenario.RemoveBallID(index);
-            break;
-        }
-        DrawCircleV(ball.Position, ball.Radius, ball.BallColor);
-        index++;
-    }
     //Draw All Pegs
     for(int index = 0; Peg& peg : currentScenario.Pegs){
         Color c;
@@ -82,6 +73,16 @@ void UI::Draw(Scenario& currentScenario){
         DrawCircleV(peg.Position, peg.Radius, c);
         index++;
     }
+    //Draw All Balls in the List
+    for(int index = 0; Ball& ball : currentScenario.Balls){
+        if(ball.Position.y > WindowY()){
+            currentScenario.RemoveBallID(index);
+            break;
+        }
+        DrawCircleV(ball.Position, ball.Radius, ball.BallColor);
+        index++;
+    }
+
     
 
     if(_statusBarEnabled){

@@ -9,6 +9,7 @@ class PhysicsEngine{
         float _accumulator = 0.0f;
         void _updatePhysics();
         void _ballWallCollision();
+        void _ballPegCollision();
     public:
         int Gravity;
         float DT;
