@@ -66,7 +66,24 @@ void UI::Draw(Scenario& currentScenario){
         DrawCircleV(ball.Position, ball.Radius, ball.BallColor);
         index++;
     }
+    //Draw All Pegs
+    for(int index = 0; Peg& peg : currentScenario.Pegs){
+        Color c;
+        switch(peg.CurrentPegType){
+            case Peg::PegType::DEFAULT:{
+                c = BLUE;
+            break;
+            }
+            case Peg::PegType::TARGET:{
+                c = ORANGE;
+            break;
+            }
+        }
+        DrawCircleV(peg.Position, peg.Radius, c);
+        index++;
+    }
     
+
     if(_statusBarEnabled){
         _drawStatusBar(currentScenario);
     }

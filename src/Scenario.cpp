@@ -25,6 +25,14 @@ void Scenario::ClearBalls(){
     Balls.clear();
 }
 
+void Scenario::NewPeg(Peg peg){
+    Pegs.push_back(peg);
+}
+
+void Scenario::RemovePeg(int pegIndex){
+    Pegs.erase(Pegs.begin() + pegIndex);
+}
+
 void Scenario::SetFlag(ScenarioFlags flag){
     flags |= static_cast<u_int32_t>(flag);
 }

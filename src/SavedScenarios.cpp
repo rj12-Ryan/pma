@@ -7,6 +7,7 @@ void Scenario::LoadScenario(UI& ui){
     //RESET SCENARIO
     Balls.clear();
     Walls.clear();
+    Pegs.clear();
     flags = 0;
     SavedScenarios ss = static_cast<SavedScenarios>(ui.DesiredScenario);
     switch(ss){
@@ -62,6 +63,13 @@ void Scenario::LoadScenario(UI& ui){
                 float r2 = (float)(GetRandomValue(10, ui.WindowY()-100));
                 this->NewBall(Ball{(Vector2){r, 10 + r2},(Vector2){0,0}, 10, BLUE});
             }
+        break;
+        }
+
+        //SCENARIO PEG TESTING
+        case SavedScenarios::PEG_TESTING:{
+            LoadedScenarioName = "PEG TESTING";
+            this->NewPeg({(Vector2){ui.WindowX()/2, ui.WindowY()/2}, 50, 0.99f, Peg::PegType::DEFAULT});
         break;
         }
     }
