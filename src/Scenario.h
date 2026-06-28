@@ -21,6 +21,7 @@ class Scenario{
             VARIOUS_BOUNCE,
             MANY_BALLS,
             PEG_TESTING,
+            PACHINKO,
             Count //Sentinel value must be last
         };
         enum class ScenarioFlags : u_int32_t{

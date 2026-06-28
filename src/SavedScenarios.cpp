@@ -72,5 +72,18 @@ void Scenario::LoadScenario(UI& ui){
             this->NewPeg({(Vector2){ui.WindowX()/2, ui.WindowY()/2}, 50, 0.99f, Peg::PegType::DEFAULT});
         break;
         }
+
+        //SCENARIO PACHINKO
+        case SavedScenarios::PACHINKO:{
+            LoadedScenarioName = "PACHINKO";
+            int radius = 10;
+            int spacing = 80;
+            for(int i=2*radius; i<ui.WindowX(); i+=spacing){
+                for(int j=100; j<ui.WindowY(); j+=spacing){
+                    this->NewPeg({(Vector2){i,j}, radius, 0.9f, Peg::PegType::DEFAULT});
+                }
+           }
+        break;
+        }
     }
 }

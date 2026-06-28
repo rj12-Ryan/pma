@@ -77,7 +77,8 @@ void PhysicsEngine::_ballPegCollision(){
                 float vn = ball.Velocity.x * normal.x + ball.Velocity.y * normal.y;
 
                 if (vn < 0.0f){
-                    ball.Velocity.x -= (1.0f + peg.Bounciness) * vn * normal.x;
+                    float dir = GetRandomValue(-1,1);
+                    ball.Velocity.x -= (1.0f + peg.Bounciness) * vn * normal.x + dir*0.04f;
                     ball.Velocity.y -= (1.0f + peg.Bounciness) * vn * normal.y;
                 }
             }
