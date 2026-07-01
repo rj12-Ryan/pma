@@ -35,30 +35,30 @@ void UI::ToggleStatus(){
     }
 }
 
-void UI::_drawStatusBar(Scenario& currentScenario)
+void UI::_drawStatusBar(Scenario& CurrentScenario)
 {
     int windowY = WindowY();
     DrawRectangle(0, windowY, WindowX(), _statusBarHeight, DARKGRAY);
     DrawFPS(20, (windowY + 0.5*_statusBarHeight - 10));
     std::string ballCountStr = "BALLS: ";
-    ballCountStr.append(std::to_string(currentScenario.Balls.size()));
+    ballCountStr.append(std::to_string(CurrentScenario.Balls.size()));
     Color c;
-    if(currentScenario.Balls.size()>99) {c = YELLOW;} else {c = GREEN;}
+    if(CurrentScenario.Balls.size()>99) {c = YELLOW;} else {c = GREEN;}
     DrawText(ballCountStr.c_str(), 150, (windowY + 0.5*_statusBarHeight - 10), 20, c);
-    std::string scenStr = "LOADED SCENARIO: " + currentScenario.LoadedScenarioName;
+    std::string scenStr = "LOADED SCENARIO: " + CurrentScenario.LoadedScenarioName;
     int scenStrWidth = MeasureText(scenStr.c_str(), 20);
     DrawText(scenStr.c_str(), WindowX() - 10 - scenStrWidth, (windowY + 0.5*_statusBarHeight - 10), 20, BLACK);
 }
 
-void UI::Draw(Scenario& currentScenario){
+void UI::Draw(Scenario& CurrentScenario){
     _drawCounter++;
 
     //Draw All Walls
-    for(Wall& wall : currentScenario.Walls){
+    for(Wall& wall : CurrentScenario.Walls){
         DrawRectangleV(wall.Position, wall.Size, wall.WallColor);
     }
     //Draw All Pegs
-    for(int index = 0; Peg& peg : currentScenario.Pegs){
+    for(int index = 0; Peg& peg : CurrentScenario.Pegs){
         Color c;
         switch(peg.CurrentPegType){
             case Peg::PegType::DEFAULT:{
@@ -70,23 +70,25 @@ void UI::Draw(Scenario& currentScenario){
             break;
             }
         }
+        if(peg.Hit){
+            DrawCircleV(peg.Position, peg.Radius+2, WHITE);
+        }
         DrawCircleV(peg.Position, peg.Radius, c);
         index++;
     }
     //Draw All Balls in the List
-    for(int index = 0; Ball& ball : currentScenario.Balls){
-        if(ball.Position.y > WindowY()){
-            currentScenario.RemoveBallID(index);
-            break;
+    for(int i=CurrentScenario.Balls.size() - 1; i>=0; i--){
+        if(CurrentScenario.Balls[i].Position.y > WindowY()){
+            CurrentScenario.RemoveBall(CurrentScenario.Balls[i].ID);
+            continue;
         }
-        DrawCircleV(ball.Position, ball.Radius, ball.BallColor);
-        index++;
+        DrawCircleV(CurrentScenario.Balls[i].Position, CurrentScenario.Balls[i].Radius, CurrentScenario.Balls[i].BallColor);
     }
 
     
 
     if(_statusBarEnabled){
-        _drawStatusBar(currentScenario);
+        _drawStatusBar(CurrentScenario);
     }
 }
 

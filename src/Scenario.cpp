@@ -2,35 +2,93 @@
 #include "UI.h"
 
 void Scenario::NewBall(Ball ball){
-    Balls.push_back(ball);
+    Ball b = ball;
+    b.ID = NextBallID++;
+    Balls.push_back(b);
+
+    size_t index = Balls.size() - 1;
+    BallLookup[b.ID] = index;
 }
 
-void Scenario::RemoveBallID(int ballIndex){
-    Balls.erase(Balls.begin() + ballIndex);
+void Scenario::RemoveBall(BallID id){
+    std::vector<PegID> pegsHit = GetBall(id).PegsHit;
+    if(!pegsHit.empty()){
+        for(PegID p : pegsHit){
+            RemovePeg(p);
+        }
+    }
+    size_t index = BallLookup.at(id);
+
+    size_t last = Balls.size() - 1;
+    if(index != last)
+    {
+        std::swap(Balls[index], Balls[last]);
+        BallLookup[Balls[index].ID] = index;
+    }
+    Balls.pop_back();
+    BallLookup.erase(id);
 }
 
-void Scenario::RemoveBall(Ball* ball){
-    Balls.erase(Balls.begin() + (ball - Balls.data()));
+Ball& Scenario::GetBall(BallID id){
+    return Balls[BallLookup.at(id)];
 }
 
 void Scenario::NewWall(Wall wall){
-    Walls.push_back(wall);
+    Wall w = wall;
+    w.ID = NextWallID++;
+    Walls.push_back(w);
+
+    size_t index = Walls.size() - 1;
+    WallLookup[w.ID] = index;
 }
 
-void Scenario::RemoveWall(int wallIndex){
-    Walls.erase(Walls.begin() + wallIndex);
+void Scenario::RemoveWall(WallID id){
+    size_t index = WallLookup.at(id);
+
+    size_t last = Walls.size() - 1;
+    if(index != last)
+    {
+        std::swap(Walls[index], Walls[last]);
+        WallLookup[Walls[index].ID] = index;
+    }
+    Walls.pop_back();
+    WallLookup.erase(id);
+}
+
+Wall& Scenario::GetWall(WallID id){
+    return Walls[WallLookup.at(id)];
 }
 
 void Scenario::ClearBalls(){
-    Balls.clear();
+    while (!Balls.empty()){
+        RemoveBall(Balls.back().ID);
+    }
 }
 
 void Scenario::NewPeg(Peg peg){
-    Pegs.push_back(peg);
+    Peg p = peg;
+    p.ID = NextPegID++;
+    Pegs.push_back(p);
+
+    size_t index = Pegs.size() - 1;
+    PegLookup[p.ID] = index;
 }
 
-void Scenario::RemovePeg(int pegIndex){
-    Pegs.erase(Pegs.begin() + pegIndex);
+void Scenario::RemovePeg(PegID id){
+    size_t index = PegLookup.at(id);
+
+    size_t last = Pegs.size() - 1;
+    if(index != last)
+    {
+        std::swap(Pegs[index], Pegs[last]);
+        PegLookup[Pegs[index].ID] = index;
+    }
+    Pegs.pop_back();
+    PegLookup.erase(id);
+}
+
+Peg& Scenario::GetPeg(PegID id){
+    return Pegs[PegLookup.at(id)];
 }
 
 void Scenario::SetFlag(ScenarioFlags flag){

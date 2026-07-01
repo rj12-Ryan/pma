@@ -4,6 +4,7 @@
 #include<raylib.h>
 #include<vector>
 #include<string>
+#include <unordered_map>
 
 #include "Ball.h"
 #include "Wall.h"
@@ -22,6 +23,7 @@ class Scenario{
             MANY_BALLS,
             PEG_TESTING,
             PACHINKO,
+            BASIC_PEGGLE,
             Count //Sentinel value must be last
         };
         enum class ScenarioFlags : u_int32_t{
@@ -34,13 +36,23 @@ class Scenario{
         std::vector<Wall> Walls;
         std::vector<Peg> Pegs;
 
+        std::unordered_map<BallID, size_t> BallLookup;
+        std::unordered_map<WallID, size_t> WallLookup;
+        std::unordered_map<PegID, size_t> PegLookup;
+
+        BallID NextBallID = 1;
+        PegID NextPegID = 1;
+        WallID NextWallID =1;
+
         void NewBall(Ball ball);
-        void RemoveBallID(int ballIndex);
-        void RemoveBall(Ball* ball);
+        void RemoveBall(BallID id);
+        Ball& GetBall(BallID);
         void NewWall(Wall wall);
-        void RemoveWall(int wallIndex);
+        void RemoveWall(WallID id);
+        Wall& GetWall(WallID);
         void NewPeg(Peg peg);
-        void RemovePeg(int pegIndex);
+        void RemovePeg(PegID id);
+        Peg& GetPeg(PegID);
         void ClearBalls();
         void SetFlag(ScenarioFlags flag);
         void ClearFlag(ScenarioFlags flag);

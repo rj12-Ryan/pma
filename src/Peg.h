@@ -1,9 +1,12 @@
 #ifndef PEG_H
 #define PEG_H
 
+#include "pma.h"
 #include<raylib.h>
+
 class Peg{
     public:
+        PegID ID;
         enum class PegType{
             TARGET,
             DEFAULT

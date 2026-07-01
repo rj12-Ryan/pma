@@ -13,7 +13,7 @@ class PhysicsEngine{
     public:
         int Gravity;
         float DT;
-        Scenario& ScenarioPointer;
+        Scenario& CurrentScenario;
         PhysicsEngine(int, float, Scenario&);
         void Step();
 };

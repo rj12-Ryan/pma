@@ -3,15 +3,16 @@
 #include "Ball.h"
 #include<raylib.h>
 #include<math.h>
+#include <iostream>
 
-PhysicsEngine::PhysicsEngine(int gravity, float dt, Scenario& scenarioPointer)
-    : Gravity(gravity), DT(dt), ScenarioPointer(scenarioPointer)
+PhysicsEngine::PhysicsEngine(int gravity, float dt, Scenario& currentScenario)
+    : Gravity(gravity), DT(dt), CurrentScenario(currentScenario)
     {}
 
 void PhysicsEngine::_updatePhysics(){
-    for(Ball& b : ScenarioPointer.Balls){
+    for(Ball& b : CurrentScenario.Balls){
         //Rainbow Balls!
-        if(ScenarioPointer.HasFlag(Scenario::ScenarioFlags::RainbowBalls)){
+        if(CurrentScenario.HasFlag(Scenario::ScenarioFlags::RainbowBalls)){
             b.BallColor = (Color){static_cast<unsigned char>((b.Position.y/3)),static_cast<unsigned char>((b.Position.y/2)),static_cast<unsigned char>((b.Position.y)),255};
         }
         b.ApplyAcceleration({0, (float)Gravity}, DT);
@@ -22,14 +23,14 @@ void PhysicsEngine::_updatePhysics(){
 }
 
 void PhysicsEngine::_ballWallCollision(){
-    for(Wall& wall : ScenarioPointer.Walls){
+    for(Wall& wall : CurrentScenario.Walls){
         Rectangle r;
         r.x = wall.Position.x;
         r.y = wall.Position.y;
         r.width = wall.Size.x;
         r.height = wall.Size.y;
         
-        for(Ball& ball : ScenarioPointer.Balls){
+        for(Ball& ball : CurrentScenario.Balls){
            if(CheckCollisionCircleRec(ball.Position,ball.Radius,r)){
             float dy = DT * ball.Velocity.y;
             float dx = DT * ball.Velocity.x;
@@ -50,14 +51,20 @@ void PhysicsEngine::_ballWallCollision(){
 }
 
 void PhysicsEngine::_ballPegCollision(){
-    for(Peg& peg : ScenarioPointer.Pegs){
-        for(Ball& ball: ScenarioPointer.Balls){
+    for(Peg& peg : CurrentScenario.Pegs){
+        for(Ball& ball: CurrentScenario.Balls){
             float dx = ball.Position.x - peg.Position.x;
             float dy = ball.Position.y - peg.Position.y;
             float distance = sqrt(dx*dx + dy*dy);
             float minDistance = ball.Radius + peg.Radius;
             
             if (distance<minDistance){
+                if(!peg.Hit){
+                    std::cout << "Peg ID = " << peg.ID << '\n';
+                    peg.Hit = true;
+                    ball.PegsHit.push_back(peg.ID);
+                }
+                
                 ball.BallColor = RED;
                 Vector2 normal;
                 if(distance > 0.0001f){

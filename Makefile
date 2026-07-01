@@ -13,6 +13,10 @@ OBJS := $(patsubst src/%.cpp,build/%.o,$(SRCS))
 # Flags
 CXXFLAGS := -std=c++20 -Wall -Wextra -g
 
+#Santize
+CXXFLAGS += -g -O0 -fsanitize=address -fno-omit-frame-pointer
+LDFLAGS  += -fsanitize=address
+
 # raylib flags (include + link)
 RAYLIB_CFLAGS := $(shell pkg-config --cflags raylib)
 RAYLIB_LIBS := $(shell pkg-config --libs raylib)
@@ -29,7 +33,7 @@ build:
 
 # Link step
 $(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(RAYLIB_LIBS) $(SYS_LIBS)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS) $(RAYLIB_LIBS) $(SYS_LIBS)
 
 # Compile step
 build/%.o: src/%.cpp | build

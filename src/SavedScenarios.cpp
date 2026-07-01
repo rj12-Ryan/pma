@@ -85,5 +85,46 @@ void Scenario::LoadScenario(UI& ui){
            }
         break;
         }
+
+        //SCENARIO BASIC PEGGLE
+        case SavedScenarios::BASIC_PEGGLE:{
+            LoadedScenarioName = "BASIC PEGGLE";
+            int paddingX = 200;
+            int paddingY = 250;
+
+            int boardX = ui.WindowX() - 2*paddingX;
+            int boardY = ui.WindowY() - 2*paddingY;
+
+            int countX = 12;
+            int countY = 8;
+
+            float spacingX = boardX/(countX+1);
+            float spacingY = boardY/(countY+1);
+
+            for(int x=0; x<countX; x++){
+                for(int y=0; y<countY; y++){
+                    float offset = 0;
+                    if(y%2 == 0){
+                        offset = spacingX/2;
+                    }
+                    this->NewPeg({(Vector2){x*spacingX + 1.5*paddingX + offset ,y*spacingX + 0.75*paddingY}, 10, 0.8f, Peg::PegType::DEFAULT});
+                }
+            }
+
+            std::vector<int> indicies(Pegs.size());
+            for (int i=0; i < Pegs.size(); i++){
+                indicies[i] = i;
+            }
+
+            for (int i = indicies.size() -1; i > 0; i--){
+                int j = GetRandomValue(0,i);
+                std::swap(indicies[i], indicies[j]);
+            }
+
+            for(int i=0; i<25; i++){
+                Pegs[indicies[i]].CurrentPegType = Peg::PegType::TARGET;
+            }
+        break;
+        }
     }
 }
