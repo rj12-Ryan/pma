@@ -10,6 +10,8 @@ class PhysicsEngine{
         void _updatePhysics();
         void _ballWallCollision();
         void _ballPegCollision();
+        void _ballBasketCollision();
+        void _moveBasket();
     public:
         int Gravity;
         float DT;
@@ -17,5 +19,6 @@ class PhysicsEngine{
         PhysicsEngine(int, float, Scenario&);
         void Step();
 };
+
 
 #endif

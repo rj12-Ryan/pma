@@ -93,7 +93,7 @@ void Scenario::LoadScenario(UI& ui){
         case SavedScenarios::BASIC_PEGGLE:{
             LoadedScenarioName = "BASIC PEGGLE";
 
-            BallBasket = Basket({(Vector2){150,40},(Vector2){70, ui.WindowY()-50},(Vector2){200, ui.WindowY()-50}, 100.0f, 0.0f, RED});
+            BallBasket = Basket({(Vector2){150,40},(Vector2){50,ui.WindowY()-50},(Vector2){ui.WindowX()-50-150,ui.WindowY()-50}, 0.2f, 0.0f, RED});
 
             int paddingX = 200;
             int paddingY = 250;

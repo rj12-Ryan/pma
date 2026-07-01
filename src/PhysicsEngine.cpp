@@ -20,6 +20,8 @@ void PhysicsEngine::_updatePhysics(){
     }
     _ballWallCollision();
     _ballPegCollision();
+    _moveBasket();
+    _ballBasketCollision();
 }
 
 void PhysicsEngine::_ballWallCollision(){
@@ -47,6 +49,25 @@ void PhysicsEngine::_ballWallCollision(){
 
            }
         }
+    }
+}
+
+void PhysicsEngine::_ballBasketCollision(){
+    Rectangle r;
+    r.x = CurrentScenario.BallBasket.Position.x;
+    r.y = CurrentScenario.BallBasket.Position.y;
+    r.width = CurrentScenario.BallBasket.Size.x;
+    r.height = CurrentScenario.BallBasket.Size.y;
+
+    std::vector<BallID> toRemove; //defer ball deletions until after we iterate entire ball list 
+    toRemove.reserve(CurrentScenario.Balls.size());
+    for(Ball& ball : CurrentScenario.Balls){
+           if(CheckCollisionCircleRec(ball.Position,ball.Radius,r)){
+                toRemove.push_back(ball.ID);
+           }
+    }
+    for(BallID id : toRemove){
+        CurrentScenario.RemoveBall(id);
     }
 }
 
@@ -93,6 +114,21 @@ void PhysicsEngine::_ballPegCollision(){
             }
         }
     }
+}
+
+void PhysicsEngine::_moveBasket(){
+    Basket& bb = CurrentScenario.BallBasket;
+    bb.Age++;
+    float ageTime = DT*bb.Age;
+
+    float prog = ageTime * bb.Speed;
+
+    float ppt = 1.0f - abs((fmod(prog,2)) - 1);
+
+    bb.Position.x = bb.Start.x + ppt * (bb.End.x - bb.Start.x);
+    bb.Position.y = bb.Start.y + ppt * (bb.End.y - bb.Start.y);
+
+    //printf("basket pos: %fx%f\n", bb.Position.x, bb.Position.y);
 }
 
 void PhysicsEngine::Step(){

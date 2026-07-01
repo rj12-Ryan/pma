@@ -13,7 +13,7 @@ class Ball{
         Vector2 Velocity; //p/s x p/s
         int Radius; //pixels
         Color BallColor; //raylib color
-        float Age; //seconds
+        float Age; //physics steps
         Ball(Vector2, Vector2, int, Color);
         void ApplyAcceleration(Vector2, float);
         std::vector<PegID> PegsHit;

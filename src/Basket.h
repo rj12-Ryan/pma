@@ -17,6 +17,7 @@ class Basket{
         float Speed;
         float Rotation;
         Color BasketColor;
+        float Age = 0; //physics steps
         bool IsMoving();
         void BeginMoving();
         void PauseMoving();
