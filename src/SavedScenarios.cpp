@@ -8,6 +8,9 @@ void Scenario::LoadScenario(UI& ui){
     Balls.clear();
     Walls.clear();
     Pegs.clear();
+    NextBallID = 1;
+    NextWallID = 1;
+    NextPegID = 1;
     flags = 0;
     SavedScenarios ss = static_cast<SavedScenarios>(ui.DesiredScenario);
     switch(ss){
@@ -89,6 +92,9 @@ void Scenario::LoadScenario(UI& ui){
         //SCENARIO BASIC PEGGLE
         case SavedScenarios::BASIC_PEGGLE:{
             LoadedScenarioName = "BASIC PEGGLE";
+
+            BallBasket = Basket({(Vector2){150,40},(Vector2){70, ui.WindowY()-50},(Vector2){200, ui.WindowY()-50}, 100.0f, 0.0f, RED});
+
             int paddingX = 200;
             int paddingY = 250;
 

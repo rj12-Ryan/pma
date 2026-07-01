@@ -10,6 +10,7 @@
 #include "Wall.h"
 #include "UI.h"
 #include "Peg.h"
+#include "Basket.h"
 
 class Scenario{
     private:
@@ -35,10 +36,12 @@ class Scenario{
         std::vector<Ball> Balls;
         std::vector<Wall> Walls;
         std::vector<Peg> Pegs;
+        Basket BallBasket = Basket({(Vector2){0,0},(Vector2){0,0},(Vector2){0,0}, 100.0f, 0.0f, MAGENTA}); //Construct Basket with default values to be overwritten by SavedScenario
 
         std::unordered_map<BallID, size_t> BallLookup;
         std::unordered_map<WallID, size_t> WallLookup;
         std::unordered_map<PegID, size_t> PegLookup;
+
 
         BallID NextBallID = 1;
         PegID NextPegID = 1;

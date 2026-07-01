@@ -60,7 +60,6 @@ void PhysicsEngine::_ballPegCollision(){
             
             if (distance<minDistance){
                 if(!peg.Hit){
-                    std::cout << "Peg ID = " << peg.ID << '\n';
                     peg.Hit = true;
                     ball.PegsHit.push_back(peg.ID);
                 }

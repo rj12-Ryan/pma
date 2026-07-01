@@ -58,7 +58,7 @@ void UI::Draw(Scenario& CurrentScenario){
         DrawRectangleV(wall.Position, wall.Size, wall.WallColor);
     }
     //Draw All Pegs
-    for(int index = 0; Peg& peg : CurrentScenario.Pegs){
+    for(Peg& peg : CurrentScenario.Pegs){
         Color c;
         switch(peg.CurrentPegType){
             case Peg::PegType::DEFAULT:{
@@ -74,8 +74,11 @@ void UI::Draw(Scenario& CurrentScenario){
             DrawCircleV(peg.Position, peg.Radius+2, WHITE);
         }
         DrawCircleV(peg.Position, peg.Radius, c);
-        index++;
     }
+
+    //Draw Basket
+    DrawRectangleV(CurrentScenario.BallBasket.Position, CurrentScenario.BallBasket.Size, CurrentScenario.BallBasket.BasketColor);
+
     //Draw All Balls in the List
     for(int i=CurrentScenario.Balls.size() - 1; i>=0; i--){
         if(CurrentScenario.Balls[i].Position.y > WindowY()){
@@ -85,7 +88,6 @@ void UI::Draw(Scenario& CurrentScenario){
         DrawCircleV(CurrentScenario.Balls[i].Position, CurrentScenario.Balls[i].Radius, CurrentScenario.Balls[i].BallColor);
     }
 
-    
 
     if(_statusBarEnabled){
         _drawStatusBar(CurrentScenario);
