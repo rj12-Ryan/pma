@@ -84,8 +84,7 @@ void PhysicsEngine::_ballPegCollision(){
                     peg.Hit = true;
                     ball.PegsHit.push_back(peg.ID);
                 }
-                
-                ball.BallColor = RED;
+
                 Vector2 normal;
                 if(distance > 0.0001f){
                     normal.x = dx/distance;
@@ -109,9 +108,6 @@ void PhysicsEngine::_ballPegCollision(){
                     ball.Velocity.y -= (1.0f + peg.Bounciness) * vn * normal.y;
                 }
             }
-            else{
-                ball.BallColor = WHITE;
-            }
         }
     }
 }
@@ -127,8 +123,6 @@ void PhysicsEngine::_moveBasket(){
 
     bb.Position.x = bb.Start.x + ppt * (bb.End.x - bb.Start.x);
     bb.Position.y = bb.Start.y + ppt * (bb.End.y - bb.Start.y);
-
-    //printf("basket pos: %fx%f\n", bb.Position.x, bb.Position.y);
 }
 
 void PhysicsEngine::Step(){

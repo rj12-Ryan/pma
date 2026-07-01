@@ -30,10 +30,10 @@ int main(){
  
     while(!WindowShouldClose()){
         BeginDrawing();
+        ClearBackground(BLANK);
         ui.ProcessInput(CurrentScenario);
         engine.Step();
         ui.Draw(CurrentScenario);
-        ClearBackground(BLANK);
         EndDrawing();
     }
     CloseWindow();
