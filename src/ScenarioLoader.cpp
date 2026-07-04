@@ -24,10 +24,6 @@ void ScenarioLoader::Parse(){
     while (std::getline(File, line))
     {
         LineCounter++;
-        if(_parseError){
-            //Load Empty On Error
-            CurrentScenario.LoadScenario(Scenario::SavedScenarios::EMPTY, WindowX, WindowY);
-        }
         line = Trim(line);
         if(line.substr(0,2) == "//"){
             continue;
@@ -67,6 +63,14 @@ void ScenarioLoader::FinishCurrentSection(){
             CurrentScenario.NewBall(CurrentBall->Build());
             break;
         }
+        case Section::PEG:{
+            if(!CurrentPeg->IsComplete()){
+                ParserError("Incomplete Peg defintion");
+                break;
+            }
+            CurrentScenario.NewPeg(CurrentPeg->Build());
+            break;
+        }
     }
     CurrentSection = Section::none;
 }
@@ -76,6 +80,11 @@ void ScenarioLoader::StartNewSection(std::string line){
     switch(CurrentSection){
         case Section::BALL:{
             CurrentBall.emplace();
+            break;
+        }
+        case Section::PEG:{
+            CurrentPeg.emplace();
+            break;
         }
     }
 }
@@ -131,6 +140,25 @@ void ScenarioLoader::ParseAssignment(std::string line){
         }
         case Section::PEG:
         {
+            if (loe == "POSITION"){
+                CurrentPeg->Position = ParseVector2(roe);
+                CurrentPeg->hasPosition = true;
+            }
+            else if(loe == "RADIUS"){
+                CurrentPeg->Radius = ParseFloat(roe);
+                CurrentPeg->hasRadius = true;
+            }
+            else if(loe == "BOUNCINESS"){
+                CurrentPeg->Bounciness = ParseFloat(roe);
+                CurrentPeg->hasBounciness = true;
+            }
+            else if(loe == "PEGTYPE"){
+                CurrentPeg->PegType = ParsePegType(roe);
+                CurrentPeg->hasPegType = true;
+            }
+            else{
+                ParserError("'" + loe + "' is not a valid property for its section");
+            }
             break;
         }
         case Section::WALL:
@@ -228,6 +256,7 @@ ScenarioLoader::Section ScenarioLoader::StrToSection(std::string str){
 void ScenarioLoader::ParserError(std::string errorText){
     std::cerr << "ERROR: PMA Parser at line " << LineCounter << " - " << errorText.c_str() << std::endl;
     _parseError = true;
+    CurrentScenario.LoadScenario(Scenario::SavedScenarios::EMPTY, WindowX, WindowY);
 }
 
 
@@ -268,4 +297,17 @@ Color ScenarioLoader::ParseColor(const std::string& str)
 
     ParserError("'" + str + "' is not a valid Color");
     return WHITE; // default or throw an exception
+}
+
+Peg::PegType ScenarioLoader::ParsePegType(std::string str){
+    if(str == "DEFAULT"){
+        return Peg::PegType::DEFAULT;
+    }
+    else if(str == "TARGET"){
+        return Peg::PegType::TARGET;
+    }
+    else{
+        ParserError("'"+str+"' is not a valid Peg Type");
+        return Peg::PegType::DEFAULT;
+    }
 }

@@ -40,6 +40,7 @@ class ScenarioLoader{
         void ParserError(std::string errorText);
         void ReplaceAll(std::string& str, const std::string& from, const std::string& to);
         Color ParseColor(const std::string& str);
+        Peg::PegType ParsePegType(std::string);
         struct BallConfig {
             Vector2 Position{};
             Vector2 Velocity{};
@@ -62,7 +63,53 @@ class ScenarioLoader{
                        hasColor;
             }
         };
+
+        struct PegConfig {
+            Vector2 Position{};
+            int Radius;
+            float Bounciness;
+            Peg::PegType PegType;
+
+            bool hasPosition = false;
+            bool hasRadius = false;
+            bool hasBounciness = false;
+            bool hasPegType = false;
+
+            Peg Build() const {
+                return Peg(Position, Radius, Bounciness, PegType);
+            }
+        
+            bool IsComplete() const {
+                return hasPosition &&
+                       hasRadius &&
+                       hasBounciness &&
+                       hasPegType;
+            }
+        };
+
         std::optional<BallConfig> CurrentBall;
+        std::optional<PegConfig> CurrentPeg;
+
+
+        //template <typename TConfig, typename TObject>
+        //void GenerateGrid(
+        //   const TConfig& config,
+        //   Scenario& scenario)
+        //{
+        //   // spacing...
+        //
+        //   for (...)
+        //   {
+        //       TObject object = config.Build();
+//
+        //       object.Position = {
+        //           grid.Start.x + col * xSpacing,
+        //           grid.Start.y + row * ySpacing
+        //       };
+        //   
+        //       scenario.Add(object);
+        //   }
+        //}
 };
 
 #endif
