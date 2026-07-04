@@ -9,6 +9,7 @@
 class ScenarioLoader{
     private:
         bool _parseError = false;
+        bool _expectGrid = false;
     public:
         std::ifstream File;
         Scenario& CurrentScenario;
@@ -27,6 +28,7 @@ class ScenarioLoader{
             GRID
         };
         Section CurrentSection = Section::none;
+        Section PreviousSection = Section::none;
         Section ParseSectionName(std::string line);
         std::string Trim(std::string);
         Section StrToSection(std::string);
@@ -41,6 +43,26 @@ class ScenarioLoader{
         void ReplaceAll(std::string& str, const std::string& from, const std::string& to);
         Color ParseColor(const std::string& str);
         Peg::PegType ParsePegType(std::string);
+
+        struct GridConfig {
+            Vector2 Position;
+            Vector2 Size;
+            int XSize;
+            int YSize;
+
+            bool hasPosition = false;
+            bool hasSize = false;
+            bool hasXSize = false;
+            bool hasYSize = false;
+
+            bool IsComplete() const {
+                return hasPosition &&
+                       hasSize &&
+                       hasXSize &&
+                       hasYSize;
+            }
+        };
+
         struct BallConfig {
             Vector2 Position{};
             Vector2 Velocity{};
@@ -51,6 +73,8 @@ class ScenarioLoader{
             bool hasVelocity = false;
             bool hasRadius = false;
             bool hasColor = false;
+
+            bool isGridding = false;
 
             Ball Build() const {
                 return Ball(Position, Velocity, Radius, BallColor);
@@ -75,6 +99,8 @@ class ScenarioLoader{
             bool hasBounciness = false;
             bool hasPegType = false;
 
+            bool isGridding = false;
+
             Peg Build() const {
                 return Peg(Position, Radius, Bounciness, PegType);
             }
@@ -85,11 +111,13 @@ class ScenarioLoader{
                        hasBounciness &&
                        hasPegType;
             }
+
         };
+
 
         std::optional<BallConfig> CurrentBall;
         std::optional<PegConfig> CurrentPeg;
-
+        std::optional<GridConfig> CurrentGrid;
 
         //template <typename TConfig, typename TObject>
         //void GenerateGrid(

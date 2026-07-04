@@ -61,15 +61,46 @@ void ScenarioLoader::FinishCurrentSection(){
                 break;
             }
             CurrentScenario.NewBall(CurrentBall->Build());
+            PreviousSection = Section::BALL;
             break;
         }
         case Section::PEG:{
-            if(!CurrentPeg->IsComplete()){
+            if(!CurrentPeg->IsComplete() && !CurrentPeg->isGridding){
                 ParserError("Incomplete Peg defintion");
                 break;
             }
-            CurrentScenario.NewPeg(CurrentPeg->Build());
+            if(!CurrentPeg->isGridding){
+                CurrentScenario.NewPeg(CurrentPeg->Build());
+            }
+            else{
+                _expectGrid = true;
+            }
+            PreviousSection = Section::PEG;
             break;
+        }
+        case Section::GRID:{
+            if(!_expectGrid){
+                ParserError("Grid specified for object that is not configured to use one");
+                break;
+            }
+            float xSpacing = CurrentGrid->Size.x/CurrentGrid->XSize;
+            float ySpacing = CurrentGrid->Size.y/CurrentGrid->YSize;
+            for(int x = 0; x < CurrentGrid->XSize; x++){
+                for(int y = 0; y < CurrentGrid->YSize; y++){
+                    Vector2 p = {CurrentGrid->Position.x+xSpacing*x, CurrentGrid->Position.y+ySpacing*y};
+                    switch(PreviousSection){
+                        case Section::PEG:{
+                            CurrentPeg->Position = p;
+                            printf("Placing Peg at: %fx%f\n", p.x, p.y);
+                            CurrentScenario.NewPeg(CurrentPeg->Build());
+                            break;
+                        }
+                        case Section::BALL:{
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
     CurrentSection = Section::none;
@@ -77,6 +108,9 @@ void ScenarioLoader::FinishCurrentSection(){
 
 void ScenarioLoader::StartNewSection(std::string line){
     CurrentSection = StrToSection(line);
+    if(_expectGrid && CurrentSection!=Section::GRID){
+        ParserError("Expected Grid section But did not find Grid section");
+    }
     switch(CurrentSection){
         case Section::BALL:{
             CurrentBall.emplace();
@@ -84,6 +118,21 @@ void ScenarioLoader::StartNewSection(std::string line){
         }
         case Section::PEG:{
             CurrentPeg.emplace();
+            break;
+        }
+        case Section::GRID:{
+            if(!_expectGrid){
+                ParserError("Invalid Position for Grid Section");
+                break;
+            }
+            CurrentGrid.emplace();
+            if(PreviousSection != Section::none && PreviousSection != Section::GRID && PreviousSection != Section::INFO){
+                CurrentGrid.emplace();
+                break;
+            }
+            else{
+                ParserError("Invalid Position for Grid Section");
+            }
             break;
         }
     }
@@ -141,8 +190,14 @@ void ScenarioLoader::ParseAssignment(std::string line){
         case Section::PEG:
         {
             if (loe == "POSITION"){
-                CurrentPeg->Position = ParseVector2(roe);
-                CurrentPeg->hasPosition = true;
+                if(roe == "GRID"){
+                    CurrentPeg->isGridding = true;
+                }
+                else{
+                    CurrentPeg->isGridding = false;
+                    CurrentPeg->Position = ParseVector2(roe);
+                    CurrentPeg->hasPosition = true;
+                } 
             }
             else if(loe == "RADIUS"){
                 CurrentPeg->Radius = ParseFloat(roe);
@@ -190,6 +245,25 @@ void ScenarioLoader::ParseAssignment(std::string line){
         }
         case Section::GRID:
         {
+            if (loe == "POSITION"){
+                CurrentGrid->Position = ParseVector2(roe);
+                CurrentGrid->hasPosition = true;
+            }
+            else if(loe == "SIZE"){
+                CurrentGrid->Size = ParseVector2(roe);
+                CurrentGrid->hasSize = true;
+            }
+            else if(loe == "XSIZE"){
+                CurrentGrid->XSize = ParseFloat(roe);
+                CurrentGrid->hasXSize = true;
+            }
+            else if(loe == "YSIZE"){
+                CurrentGrid->YSize = ParseFloat(roe);
+                CurrentGrid->hasYSize = true;
+            }
+            else{
+                ParserError("'" + loe + "' is not a valid property for its section");
+            }
             break;
         }
         case Section::none:
