@@ -11,8 +11,8 @@ class ScenarioLoader{
     public:
         std::ifstream File;
         Scenario& CurrentScenario;
-        int WindowX, WindowY;
-        ScenarioLoader(std::string path, Scenario& currentScenario, int windowX, int windowY);
+        float WindowX, WindowY, CenterX, CenterY;
+        ScenarioLoader(std::string path, Scenario& currentScenario, float windowX, float windowY);
         int LineCounter;
         void Parse();
         enum class Section
@@ -37,6 +37,8 @@ class ScenarioLoader{
         Vector2 ParseVector2(std::string str);
         float ParseFloat(std::string str);
         void ParserError(std::string errorText);
+        void ReplaceAll(std::string& str, const std::string& from, const std::string& to);
+        Color ParseColor(const std::string& str);
 };
 
 #endif

@@ -3,10 +3,13 @@
 #include <unordered_set>
 #include <string>
 #include <algorithm> 
+#include <raylib.h>
 
-ScenarioLoader::ScenarioLoader(std::string path, Scenario& currentScenario, int windowX, int windowY)
+ScenarioLoader::ScenarioLoader(std::string path, Scenario& currentScenario, float windowX, float windowY)
     : CurrentScenario(currentScenario), WindowX(windowX), WindowY(windowY)
 {
+    CenterX = windowX/2;
+    CenterY = windowY/2;
     File.open(path);
     if(!File.is_open()){
         std::cerr << "Failed to open scenario file: " << path << "\n";
@@ -89,6 +92,22 @@ void ScenarioLoader::ParseAssignment(std::string line){
             if (loe == "SIZE"){
                 CurrentScenario.BallBasket.Size = ParseVector2(roe);
             }
+            else if(loe == "START"){
+                CurrentScenario.BallBasket.Start = ParseVector2(roe);
+            }
+            else if(loe == "END"){
+                CurrentScenario.BallBasket.End = ParseVector2(roe);
+            }
+            else if(loe == "SPEED"){
+                CurrentScenario.BallBasket.Speed = ParseFloat(roe);
+            }
+            else if(loe == "ROTATION"){
+                CurrentScenario.BallBasket.Rotation = ParseFloat(roe);
+            }
+            else if(loe == "COLOR"){
+                CurrentScenario.BallBasket.BasketColor = ParseColor(roe);
+            }
+            
             
             break;
         }
@@ -125,16 +144,25 @@ Vector2 ScenarioLoader::ParseVector2(std::string str){
 }
 
 float ScenarioLoader::ParseFloat(std::string str){
-    try {
+    ReplaceAll(str, "WINX", std::to_string(WindowX));
+    ReplaceAll(str, "WINY", std::to_string(WindowY));
+    ReplaceAll(str, "MIDX", std::to_string(CenterX));
+    ReplaceAll(str, "MIDY", std::to_string(CenterY));
+
+    if(str.find("+")!=std::string::npos){
+        int plusPos = str.find('+');
+        std::string lop = str.substr(0, plusPos);
+        std::string rop = str.substr(plusPos+1, str.size());
+        return ParseFloat(lop) + ParseFloat(rop);
+    }
+    else if(str.find("-")!=std::string::npos){
+        int minusPos = str.find('-');
+        std::string lom = str.substr(0, minusPos);
+        std::string rom = str.substr(minusPos+1, str.size());
+        return ParseFloat(lom) - ParseFloat(rom);
+    }
+    else{
         return std::stof(str);
-    } 
-    catch (const std::invalid_argument& e) {
-        ParserError("ParseFloat, No conversion could be performed");
-        return 0.0f;
-    } 
-    catch (const std::out_of_range& e) {
-        ParserError("ParseFloat, Value is out of range for a float");
-        return 0.0f;
     }
 }
 
@@ -152,4 +180,43 @@ ScenarioLoader::Section ScenarioLoader::StrToSection(std::string str){
 void ScenarioLoader::ParserError(std::string errorText){
     std::cerr << "ERROR: PMA Parser at line " << LineCounter << " - " << errorText.c_str() << std::endl;
     _parseError = true;
+}
+
+
+void ScenarioLoader::ReplaceAll(std::string& str, const std::string& from, const std::string& to) {
+    if (from.empty()) return;
+    
+    size_t pos = 0;
+    while ((pos = str.find(from, pos)) != std::string::npos) {
+        str.replace(pos, from.length(), to);
+        pos += to.length();
+    }
+}
+
+Color ScenarioLoader::ParseColor(const std::string& str)
+{
+    static const std::unordered_map<std::string, Color> ColorMap = {
+    {"RED", RED},
+    {"GREEN", GREEN},
+    {"BLUE", BLUE},
+    {"WHITE", WHITE},
+    {"BLACK", BLACK},
+    {"YELLOW", YELLOW},
+    {"ORANGE", ORANGE},
+    {"PURPLE", PURPLE},
+    {"PINK", PINK},
+    {"BROWN", BROWN},
+    {"GRAY", GRAY},
+    {"SKYBLUE", SKYBLUE},
+    {"LIME", LIME},
+    {"GOLD", GOLD},
+    {"MAROON", MAROON},
+    {"RAYWHITE", RAYWHITE}
+    };
+
+    auto it = ColorMap.find(str);
+    if (it != ColorMap.end())
+        return it->second;
+
+    return WHITE; // default or throw an exception
 }
