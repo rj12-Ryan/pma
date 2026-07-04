@@ -1,24 +1,36 @@
 #include "Scenario.h"
+#include "ScenarioLoader.h"
 #include "UI.h"
 #include <cassert>
 #include "Wall.h"
 
-void Scenario::LoadScenario(UI& ui){
+void Scenario::LoadScenario(Scenario::SavedScenarios desiredScenario, int windowX, int windowY){
     //RESET SCENARIO
     Balls.clear();
     Walls.clear();
     Pegs.clear();
+    BallBasket = Basket({(Vector2){0,0},(Vector2){0,0},(Vector2){0,0}, 100.0f, 0.0f, MAGENTA}); //Construct Basket with default values to be overwritten by SavedScenario
     NextBallID = 1;
     NextWallID = 1;
     NextPegID = 1;
     flags = 0;
-    SavedScenarios ss = static_cast<SavedScenarios>(ui.DesiredScenario);
+    SavedScenarios ss = desiredScenario;
     switch(ss){
         //SCENARIO COUNT (UNREACHABLE)
         case SavedScenarios::Count:
             //we cannot reach this state because Count is not a valid Saved Scenario
             assert(false);
         break;
+
+        //FROM FILE
+        case SavedScenarios::FROM_FILE:
+            {   
+                LoadedScenarioName = "Loading File";
+                std::string path = "src/TestSavedScenario.pma";
+                ScenarioLoader loader = ScenarioLoader(path, *this, windowX, windowY);
+                break;
+            }
+
 
         //SCENARIO EMPTY
         case SavedScenarios::EMPTY:
@@ -35,10 +47,10 @@ void Scenario::LoadScenario(UI& ui){
         //SCENARIO VARIOUS BOUNCE
         case SavedScenarios::VARIOUS_BOUNCE:
             LoadedScenarioName = "VARIOUS BOUNCE";
-            this->NewWall(Wall((Vector2){0, (float)ui.WindowY()-50.0f}, (Vector2){(float)ui.WindowX()/2, 50.0f}, DARKGREEN, 0.99f));
-            this->NewWall(Wall((Vector2){(float)ui.WindowX()/2, (float)ui.WindowY()-50.0f}, (Vector2){(float)ui.WindowX()/2, 50.0f}, DARKBLUE, 0.50f));
-            this->NewBall(Ball{(Vector2){ui.WindowX()/4, 50},(Vector2){0,0}, 10, WHITE});
-            this->NewBall(Ball{(Vector2){3*ui.WindowX()/4, 50},(Vector2){0,0}, 10, WHITE});
+            this->NewWall(Wall((Vector2){0, (float)windowY-50.0f}, (Vector2){(float)windowX/2, 50.0f}, DARKGREEN, 0.99f));
+            this->NewWall(Wall((Vector2){(float)windowX/2, (float)windowY-50.0f}, (Vector2){(float)windowX/2, 50.0f}, DARKBLUE, 0.50f));
+            this->NewBall(Ball{(Vector2){windowX/4, 50},(Vector2){0,0}, 10, WHITE});
+            this->NewBall(Ball{(Vector2){3*windowX/4, 50},(Vector2){0,0}, 10, WHITE});
        break;
 
         //SCENARIO THE WAVE
@@ -46,9 +58,9 @@ void Scenario::LoadScenario(UI& ui){
         {
             LoadedScenarioName = "THE WAVE";
             this->SetFlag(ScenarioFlags::RainbowBalls);
-            this->NewWall({{0, (float)ui.WindowY()-50}, {(float)ui.WindowX(), 50}, DARKGREEN, 0.99});
+            this->NewWall({{0, (float)windowY-50}, {(float)windowX, 50}, DARKGREEN, 0.99});
             int ballR = 10;
-            int ballCount = ui.WindowX() / (ballR*2);
+            int ballCount = windowX / (ballR*2);
             for(int i=0; i<ballCount; i++){
                 this->NewBall({(Vector2){(float)ballR+(2*ballR)*i, 10.0f+(float)(0.5*ballR*i)}, (Vector2){0,0}, ballR, BLUE});
             }
@@ -60,10 +72,10 @@ void Scenario::LoadScenario(UI& ui){
         {
             LoadedScenarioName = "MANY BALLS";
             this->SetFlag(ScenarioFlags::RainbowBalls);
-            this->NewWall({(Vector2){0, (float)ui.WindowY()-50}, (Vector2){(float)ui.WindowX(), 50}, YELLOW, 1.0f});
+            this->NewWall({(Vector2){0, (float)windowY-50}, (Vector2){(float)windowX, 50}, YELLOW, 1.0f});
             for(int i=0; i<452; i++){
-                float r = (float)(GetRandomValue(10, ui.WindowX()-10));
-                float r2 = (float)(GetRandomValue(10, ui.WindowY()-100));
+                float r = (float)(GetRandomValue(10, windowX-10));
+                float r2 = (float)(GetRandomValue(10, windowY-100));
                 this->NewBall(Ball{(Vector2){r, 10 + r2},(Vector2){0,0}, 10, BLUE});
             }
         break;
@@ -72,7 +84,7 @@ void Scenario::LoadScenario(UI& ui){
         //SCENARIO PEG TESTING
         case SavedScenarios::PEG_TESTING:{
             LoadedScenarioName = "PEG TESTING";
-            this->NewPeg({(Vector2){ui.WindowX()/2, ui.WindowY()/2}, 50, 0.99f, Peg::PegType::DEFAULT});
+            this->NewPeg({(Vector2){windowX/2, windowY/2}, 50, 0.99f, Peg::PegType::DEFAULT});
         break;
         }
 
@@ -81,8 +93,8 @@ void Scenario::LoadScenario(UI& ui){
             LoadedScenarioName = "PACHINKO";
             int radius = 10;
             int spacing = 80;
-            for(int i=2*radius; i<ui.WindowX(); i+=spacing){
-                for(int j=100; j<ui.WindowY(); j+=spacing){
+            for(int i=2*radius; i<windowX; i+=spacing){
+                for(int j=100; j<windowY; j+=spacing){
                     this->NewPeg({(Vector2){i,j}, radius, 0.9f, Peg::PegType::DEFAULT});
                 }
            }
@@ -93,13 +105,13 @@ void Scenario::LoadScenario(UI& ui){
         case SavedScenarios::BASIC_PEGGLE:{
             LoadedScenarioName = "BASIC PEGGLE";
 
-            BallBasket = Basket({(Vector2){150,40},(Vector2){50,ui.WindowY()-50},(Vector2){ui.WindowX()-50-150,ui.WindowY()-50}, 0.2f, 0.0f, RED});
+            BallBasket = Basket({(Vector2){150,40},(Vector2){50,windowY-50},(Vector2){windowX-50-150,windowY-50}, 0.2f, 0.0f, RED});
 
             int paddingX = 200;
             int paddingY = 250;
 
-            int boardX = ui.WindowX() - 2*paddingX;
-            int boardY = ui.WindowY() - 2*paddingY;
+            int boardX = windowX - 2*paddingX;
+            int boardY = windowY - 2*paddingY;
 
             int countX = 12;
             int countY = 8;

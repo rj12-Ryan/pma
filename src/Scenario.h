@@ -25,6 +25,7 @@ class Scenario{
             PEG_TESTING,
             PACHINKO,
             BASIC_PEGGLE,
+            FROM_FILE,
             Count //Sentinel value must be last
         };
         enum class ScenarioFlags : u_int32_t{
@@ -62,7 +63,7 @@ class Scenario{
         bool HasFlag(ScenarioFlags flag) const;
         SavedScenarios NextScenario(SavedScenarios current);
         SavedScenarios PreviousScenario(SavedScenarios current);
-        void LoadScenario(UI&);
+        void LoadScenario(SavedScenarios, int windowX, int windowY);
 };
 
 #endif

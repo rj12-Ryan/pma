@@ -95,19 +95,19 @@ void UI::Draw(Scenario& CurrentScenario){
 }
 
 void UI::ProcessInput(Scenario& CurrentScenario){
-    if(IsKeyDown(KEY_R)){
-        CurrentScenario.LoadScenario(*this);
+    if(IsKeyPressed(KEY_R)){
+        CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
     }
     if(IsKeyPressed(KEY_C)){
         CurrentScenario.ClearBalls();
     }
     if(IsKeyPressed(KEY_RIGHT)){
         DesiredScenario = static_cast<int>(CurrentScenario.NextScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario)));
-        CurrentScenario.LoadScenario(*this);
+        CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
     }
     if(IsKeyPressed(KEY_LEFT)){
         DesiredScenario = static_cast<int>(CurrentScenario.PreviousScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario)));
-        CurrentScenario.LoadScenario(*this);
+        CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
     }
     if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
         Vector2 mouse = GetMousePosition();

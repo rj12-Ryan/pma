@@ -19,11 +19,11 @@ Scenario CurrentScenario;
 
 int main(){
     //CREATE A UI
-    UI ui(1920, 1080, true, 30, static_cast<int>(Scenario::SavedScenarios::BASIC_PEGGLE));
+    UI ui(1920, 1080, true, 30, static_cast<int>(Scenario::SavedScenarios::FROM_FILE));
     ui.InitPMAWindow();
 
     //LOAD SCENARIO
-    CurrentScenario.LoadScenario(ui);
+    CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(ui.DesiredScenario), ui.WindowX(), ui.WindowY());
 
     //GENTLEMEN... START YOUR ENGINE
     PhysicsEngine engine(GRAVITY, 1.0f/TARGET_PHYSICS_PER_SECOND, CurrentScenario);

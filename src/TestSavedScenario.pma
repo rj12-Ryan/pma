@@ -1,0 +1,16 @@
+//PMA Scenario
+INFO
+  NAME = TestPMASave
+
+BASKET
+  SIZE = 150,40
+  START = WINY-50
+  END = WINX-200,WINY-50
+  SPEED = 0.2
+  ROTATION = 0
+  COLOR = RED
+  
+
+  
+
+
