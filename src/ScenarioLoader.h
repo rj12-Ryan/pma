@@ -3,6 +3,7 @@
 
 #include "pma.h"
 #include <fstream>
+#include <optional>
 #include "Scenario.h"
 
 class ScenarioLoader{
@@ -39,6 +40,29 @@ class ScenarioLoader{
         void ParserError(std::string errorText);
         void ReplaceAll(std::string& str, const std::string& from, const std::string& to);
         Color ParseColor(const std::string& str);
+        struct BallConfig {
+            Vector2 Position{};
+            Vector2 Velocity{};
+            int Radius = 10;
+            Color BallColor = RED;
+
+            bool hasPosition = false;
+            bool hasVelocity = false;
+            bool hasRadius = false;
+            bool hasColor = false;
+
+            Ball Build() const {
+                return Ball(Position, Velocity, Radius, BallColor);
+            }
+        
+            bool IsComplete() const {
+                return hasPosition &&
+                       hasVelocity &&
+                       hasRadius &&
+                       hasColor;
+            }
+        };
+        std::optional<BallConfig> CurrentBall;
 };
 
 #endif

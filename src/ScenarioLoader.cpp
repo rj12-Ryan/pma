@@ -29,6 +29,9 @@ void ScenarioLoader::Parse(){
             CurrentScenario.LoadScenario(Scenario::SavedScenarios::EMPTY, WindowX, WindowY);
         }
         line = Trim(line);
+        if(line.substr(0,2) == "//"){
+            continue;
+        }
         if(IsSection(line)){
             FinishCurrentSection();
             StartNewSection(line);
@@ -39,14 +42,14 @@ void ScenarioLoader::Parse(){
             if(CurrentSection == Section::none){
                 ParserError("Cannot assign outside of section");
             }
-            //printf("Assignment: %s\n", line.c_str());
             ParseAssignment(line);
         }
     }   
+    FinishCurrentSection();
 }
 
 bool ScenarioLoader::IsSection(std::string line){
-    std::unordered_set<std::string> valid_sections = {"INFO", "BASKET", "PEG", "WALL", "GRID"};
+    std::unordered_set<std::string> valid_sections = {"INFO", "BASKET", "PEG", "WALL", "BALL", "GRID"};
     return valid_sections.count(line) == 1;
 }
 
@@ -55,12 +58,26 @@ bool ScenarioLoader::IsAssignment(std::string line){
 }
 
 void ScenarioLoader::FinishCurrentSection(){
+    switch(CurrentSection){
+        case Section::BALL:{
+            if(!CurrentBall->IsComplete()){
+                ParserError("Incomplete Ball defintion");
+                break;
+            }
+            CurrentScenario.NewBall(CurrentBall->Build());
+            break;
+        }
+    }
     CurrentSection = Section::none;
 }
 
 void ScenarioLoader::StartNewSection(std::string line){
     CurrentSection = StrToSection(line);
-    //printf("Start new section: %s\n", line.c_str());
+    switch(CurrentSection){
+        case Section::BALL:{
+            CurrentBall.emplace();
+        }
+    }
 }
 
 std::string ScenarioLoader::Trim(std::string str){
@@ -107,8 +124,9 @@ void ScenarioLoader::ParseAssignment(std::string line){
             else if(loe == "COLOR"){
                 CurrentScenario.BallBasket.BasketColor = ParseColor(roe);
             }
-            
-            
+            else{
+                ParserError("'" + loe + "' is not a valid property for its section");
+            }
             break;
         }
         case Section::PEG:
@@ -121,6 +139,25 @@ void ScenarioLoader::ParseAssignment(std::string line){
         }
         case Section::BALL:
         {
+            if (loe == "POSITION"){
+                CurrentBall->Position = ParseVector2(roe);
+                CurrentBall->hasPosition = true;
+            }
+            else if(loe == "VELOCITY"){
+                CurrentBall->Velocity = ParseVector2(roe);
+                CurrentBall->hasVelocity = true;
+            }
+            else if(loe == "RADIUS"){
+                CurrentBall->Radius = ParseFloat(roe);
+                CurrentBall->hasRadius = true;
+            }
+            else if(loe == "COLOR"){
+                CurrentBall->BallColor = ParseColor(roe);
+                CurrentBall->hasColor = true;
+            }
+            else{
+                ParserError("'" + loe + "' is not a valid property for its section");
+            }
             break;
         }
         case Section::GRID:
@@ -162,7 +199,18 @@ float ScenarioLoader::ParseFloat(std::string str){
         return ParseFloat(lom) - ParseFloat(rom);
     }
     else{
-        return std::stof(str);
+
+        try {
+            return std::stof(str);
+          } 
+        catch (const std::invalid_argument& e) {
+            ParserError("Invalid argument: Could not convert to float.");
+            return 0.0f;
+        } 
+        catch (const std::out_of_range& e) {
+            ParserError("Out of range: The value overflows/underflows a float.");
+            return 0.0f;
+        }
     }
 }
 
@@ -218,5 +266,6 @@ Color ScenarioLoader::ParseColor(const std::string& str)
     if (it != ColorMap.end())
         return it->second;
 
+    ParserError("'" + str + "' is not a valid Color");
     return WHITE; // default or throw an exception
 }
