@@ -96,9 +96,17 @@ void ScenarioLoader::FinishCurrentSection(){
             }
             float xSpacing = CurrentGrid->Size.x/CurrentGrid->XSize;
             float ySpacing = CurrentGrid->Size.y/CurrentGrid->YSize;
+            float offset;
+
             for(int x = 0; x < CurrentGrid->XSize; x++){
                 for(int y = 0; y < CurrentGrid->YSize; y++){
-                    Vector2 p = {CurrentGrid->Position.x+xSpacing*x, CurrentGrid->Position.y+ySpacing*y};
+                    if(y%2 == 0){
+                        offset = CurrentGrid->OffsetFactor*xSpacing;
+                    }
+                    else{
+                        offset = 0;
+                    }
+                    Vector2 p = {CurrentGrid->Position.x+xSpacing*x+offset, CurrentGrid->Position.y+ySpacing*y};
                     switch(PreviousSection){
                         case Section::PEG:{
                             CurrentPeg->Position = p;
@@ -279,6 +287,10 @@ void ScenarioLoader::ParseAssignment(std::string line){
             else if(loe == "YSIZE"){
                 CurrentGrid->YSize = ParseFloat(roe);
                 CurrentGrid->hasYSize = true;
+            }
+            else if(loe == "OFFSETFACTOR"){
+                CurrentGrid->OffsetFactor = ParseFloat(roe);
+                CurrentGrid->hasOffsetFactor = true;
             }
             else{
                 ParserError("'" + loe + "' is not a valid property for its section");

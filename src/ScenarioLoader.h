@@ -49,16 +49,19 @@ class ScenarioLoader{
             Vector2 Size;
             int XSize;
             int YSize;
+            float OffsetFactor;
 
             bool hasPosition = false;
             bool hasSize = false;
             bool hasXSize = false;
             bool hasYSize = false;
+            bool hasOffsetFactor = false;
 
             bool IsComplete() const {
                 return hasPosition &&
                        hasSize &&
                        hasXSize &&
+                       hasOffsetFactor &&
                        hasYSize;
             }
         };
