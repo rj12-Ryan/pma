@@ -33,7 +33,6 @@ void ScenarioLoader::Parse(){
             StartNewSection(line);
             continue;
         }
-
         if(IsAssignment(line)){
             if(CurrentSection == Section::none){
                 ParserError("Cannot assign outside of section");
@@ -42,6 +41,9 @@ void ScenarioLoader::Parse(){
         }
     }   
     FinishCurrentSection();
+    if(_expectGrid){
+        ParserError("Expected Grid section But did not find Grid section");
+    }
 }
 
 bool ScenarioLoader::IsSection(std::string line){
@@ -56,11 +58,16 @@ bool ScenarioLoader::IsAssignment(std::string line){
 void ScenarioLoader::FinishCurrentSection(){
     switch(CurrentSection){
         case Section::BALL:{
-            if(!CurrentBall->IsComplete()){
+            if(!CurrentBall->IsComplete() && !CurrentBall->isGridding){
                 ParserError("Incomplete Ball defintion");
                 break;
             }
-            CurrentScenario.NewBall(CurrentBall->Build());
+            if(!CurrentBall->isGridding){
+                CurrentScenario.NewBall(CurrentBall->Build());
+            }
+            else{
+                _expectGrid = true;
+            }
             PreviousSection = Section::BALL;
             break;
         }
@@ -83,6 +90,10 @@ void ScenarioLoader::FinishCurrentSection(){
                 ParserError("Grid specified for object that is not configured to use one");
                 break;
             }
+            if(!CurrentGrid->IsComplete()){
+                ParserError("Incomplete Grid defintion");
+                break;
+            }
             float xSpacing = CurrentGrid->Size.x/CurrentGrid->XSize;
             float ySpacing = CurrentGrid->Size.y/CurrentGrid->YSize;
             for(int x = 0; x < CurrentGrid->XSize; x++){
@@ -91,16 +102,18 @@ void ScenarioLoader::FinishCurrentSection(){
                     switch(PreviousSection){
                         case Section::PEG:{
                             CurrentPeg->Position = p;
-                            printf("Placing Peg at: %fx%f\n", p.x, p.y);
                             CurrentScenario.NewPeg(CurrentPeg->Build());
                             break;
                         }
                         case Section::BALL:{
+                            CurrentBall->Position = p;
+                            CurrentScenario.NewBall(CurrentBall->Build());
                             break;
                         }
                     }
                 }
             }
+            _expectGrid = false;
         }
     }
     CurrentSection = Section::none;
@@ -223,8 +236,14 @@ void ScenarioLoader::ParseAssignment(std::string line){
         case Section::BALL:
         {
             if (loe == "POSITION"){
-                CurrentBall->Position = ParseVector2(roe);
-                CurrentBall->hasPosition = true;
+                if(roe == "GRID"){
+                    CurrentBall->isGridding = true;
+                }
+                else{
+                    CurrentPeg->isGridding = false;
+                    CurrentBall->Position = ParseVector2(roe);
+                    CurrentBall->hasPosition = true;
+                }
             }
             else if(loe == "VELOCITY"){
                 CurrentBall->Velocity = ParseVector2(roe);
