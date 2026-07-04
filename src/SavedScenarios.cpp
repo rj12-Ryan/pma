@@ -26,7 +26,7 @@ void Scenario::LoadScenario(Scenario::SavedScenarios desiredScenario, int window
         case SavedScenarios::FROM_FILE:
             {   
                 LoadedScenarioName = "Loading File";
-                std::string path = "src/TestSavedScenario.pma";
+                std::string path = "src/GenericPegGame.pma";
                 ScenarioLoader loader = ScenarioLoader(path, *this, windowX, windowY);
                 break;
             }

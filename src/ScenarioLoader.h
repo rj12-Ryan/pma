@@ -50,6 +50,7 @@ class ScenarioLoader{
             int XSize;
             int YSize;
             float OffsetFactor;
+            int RandomFlipped = 0;
 
             bool hasPosition = false;
             bool hasSize = false;

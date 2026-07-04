@@ -98,6 +98,8 @@ void ScenarioLoader::FinishCurrentSection(){
             float ySpacing = CurrentGrid->Size.y/CurrentGrid->YSize;
             float offset;
 
+            std::vector<Peg> pegsToAdd;
+
             for(int x = 0; x < CurrentGrid->XSize; x++){
                 for(int y = 0; y < CurrentGrid->YSize; y++){
                     if(y%2 == 0){
@@ -110,7 +112,8 @@ void ScenarioLoader::FinishCurrentSection(){
                     switch(PreviousSection){
                         case Section::PEG:{
                             CurrentPeg->Position = p;
-                            CurrentScenario.NewPeg(CurrentPeg->Build());
+                            //save the pegs we need to add to a temp vector
+                            pegsToAdd.push_back(CurrentPeg->Build());
                             break;
                         }
                         case Section::BALL:{
@@ -119,6 +122,43 @@ void ScenarioLoader::FinishCurrentSection(){
                             break;
                         }
                     }
+                }
+            }
+            //if we are drawing peg grid apply random flips to temp peg vector and add to current scenario
+            if(PreviousSection==Section::PEG){
+                //check vailidity of randomflipped
+                if(CurrentGrid->RandomFlipped > CurrentGrid->XSize * CurrentGrid->YSize){
+                    ParserError("Random Flipped larger than total amount of Pegs drawn");
+                    break;
+                }
+
+                //determine the opposite peg type based on first in temp vector
+                Peg::PegType oppo = Peg::PegType::DEFAULT; //default by default
+                switch(pegsToAdd[0].CurrentPegType){
+                    case Peg::PegType::DEFAULT:
+                        oppo = Peg::PegType::TARGET;
+                        break;
+                    case Peg::PegType::TARGET:
+                        oppo = Peg::PegType::DEFAULT;
+                        break;
+                }
+
+                std::vector<int> indicies(pegsToAdd.size());
+                for (int i=0; i < pegsToAdd.size(); i++){
+                    indicies[i] = i;
+                }
+
+                for (int i = indicies.size() -1; i > 0; i--){
+                    int j = GetRandomValue(0,i);
+                    std::swap(indicies[i], indicies[j]);
+                }
+
+                for(int i=0; i<CurrentGrid->RandomFlipped; i++){
+                    pegsToAdd[indicies[i]].CurrentPegType = oppo;
+                }
+
+                for(Peg& p : pegsToAdd){
+                    CurrentScenario.NewPeg(p);
                 }
             }
             _expectGrid = false;
@@ -291,6 +331,9 @@ void ScenarioLoader::ParseAssignment(std::string line){
             else if(loe == "OFFSETFACTOR"){
                 CurrentGrid->OffsetFactor = ParseFloat(roe);
                 CurrentGrid->hasOffsetFactor = true;
+            }
+            else if(loe == "RANDOMFLIPPED"){
+                CurrentGrid->RandomFlipped = ParseFloat(roe);
             }
             else{
                 ParserError("'" + loe + "' is not a valid property for its section");
