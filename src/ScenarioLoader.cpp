@@ -71,6 +71,15 @@ void ScenarioLoader::FinishCurrentSection(){
             PreviousSection = Section::BALL;
             break;
         }
+        case Section::WALL:{
+            if(!CurrentWall->IsComplete()){
+                ParserError("Incomplete Wall defintion");
+                break;
+            }
+            CurrentScenario.NewWall(CurrentWall->Build());
+            PreviousSection = Section::WALL;
+            break;
+        }
         case Section::PEG:{
             if(!CurrentPeg->IsComplete() && !CurrentPeg->isGridding){
                 ParserError("Incomplete Peg defintion");
@@ -170,11 +179,15 @@ void ScenarioLoader::FinishCurrentSection(){
 void ScenarioLoader::StartNewSection(std::string line){
     CurrentSection = StrToSection(line);
     if(_expectGrid && CurrentSection!=Section::GRID){
-        ParserError("Expected Grid section But did not find Grid section");
+        ParserError("Expected Grid section but did not find Grid section");
     }
     switch(CurrentSection){
         case Section::BALL:{
             CurrentBall.emplace();
+            break;
+        }
+        case Section::WALL:{
+            CurrentWall.emplace();
             break;
         }
         case Section::PEG:{
@@ -279,6 +292,25 @@ void ScenarioLoader::ParseAssignment(std::string line){
         }
         case Section::WALL:
         {
+            if (loe == "POSITION"){
+                CurrentWall->Position = ParseVector2(roe);
+                CurrentWall->hasPosition = true;
+            }
+            else if(loe == "SIZE"){
+                CurrentWall->Size = ParseVector2(roe);
+                CurrentWall->hasSize = true;
+            }
+            else if(loe == "BOUNCINESS"){
+                CurrentWall->Bounciness = ParseFloat(roe);
+                CurrentWall->hasBounciness = true;
+            }
+            else if(loe == "COLOR"){
+                CurrentWall->WallColor = ParseColor(roe);
+                CurrentWall->hasColor = true;
+            }
+            else{
+                ParserError("'" + loe + "' is not a valid property for its section");
+            }
             break;
         }
         case Section::BALL:
@@ -375,7 +407,6 @@ float ScenarioLoader::ParseFloat(std::string str){
         return ParseFloat(lom) - ParseFloat(rom);
     }
     else{
-
         try {
             return std::stof(str);
           } 

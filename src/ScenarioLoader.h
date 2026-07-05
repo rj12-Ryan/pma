@@ -92,6 +92,29 @@ class ScenarioLoader{
             }
         };
 
+        struct WallConfig {
+            Vector2 Position{};
+            Vector2 Size{};
+            float Bounciness;
+            Color WallColor = MAGENTA;
+
+            bool hasPosition = false;
+            bool hasSize = false;
+            bool hasBounciness = false;
+            bool hasColor = false;
+
+            Wall Build() const {
+                return Wall(Position, Size, WallColor, Bounciness);
+            }
+        
+            bool IsComplete() const {
+                return hasPosition &&
+                       hasSize &&
+                       hasBounciness &&
+                       hasColor;
+            }
+        };
+
         struct PegConfig {
             Vector2 Position{};
             int Radius;
@@ -118,30 +141,10 @@ class ScenarioLoader{
 
         };
 
-
+        std::optional<WallConfig> CurrentWall;
         std::optional<BallConfig> CurrentBall;
         std::optional<PegConfig> CurrentPeg;
         std::optional<GridConfig> CurrentGrid;
-
-        //template <typename TConfig, typename TObject>
-        //void GenerateGrid(
-        //   const TConfig& config,
-        //   Scenario& scenario)
-        //{
-        //   // spacing...
-        //
-        //   for (...)
-        //   {
-        //       TObject object = config.Build();
-//
-        //       object.Position = {
-        //           grid.Start.x + col * xSpacing,
-        //           grid.Start.y + row * ySpacing
-        //       };
-        //   
-        //       scenario.Add(object);
-        //   }
-        //}
 };
 
 #endif
