@@ -10,6 +10,8 @@ class Basket{
         bool _moving;
     public:
         Basket(Vector2 size, Vector2 start, Vector2 end, float speed, float rotation, Color basketColor);
+        Basket();
+        bool Rendered;
         Vector2 Size;
         Vector2 Start;
         Vector2 End;

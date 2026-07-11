@@ -2,7 +2,13 @@
 
 Basket::Basket(Vector2 size, Vector2 start, Vector2 end, float speed, float rotation, Color basketColor)
     :Size(size), Start(start), End(end), Speed(speed), Rotation(rotation), BasketColor(basketColor)
-{}
+{
+    Rendered = true;
+}
+
+Basket::Basket(){
+    Rendered=false;
+}
 
 bool Basket::IsMoving(){
     return _moving;

@@ -19,7 +19,7 @@ Scenario CurrentScenario;
 
 int main(){
     //CREATE A UI
-    UI ui(1920, 1080, true, 30, static_cast<int>(Scenario::SavedScenarios::FROM_FILE));
+    UI ui(1920, 1080, true, 30, static_cast<int>(Scenario::SavedScenarios::BASIC_PEGGLE));
     ui.InitPMAWindow();
 
     //LOAD SCENARIO

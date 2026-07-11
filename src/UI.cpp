@@ -77,7 +77,9 @@ void UI::Draw(Scenario& CurrentScenario){
     }
 
     //Draw Basket
-    DrawRectangleV(CurrentScenario.BallBasket.Position, CurrentScenario.BallBasket.Size, CurrentScenario.BallBasket.BasketColor);
+    if(CurrentScenario.BallBasket.Rendered){
+        DrawRectangleV(CurrentScenario.BallBasket.Position, CurrentScenario.BallBasket.Size, CurrentScenario.BallBasket.BasketColor);
+    }
 
     //Draw All Balls in the List
     for(int i=CurrentScenario.Balls.size() - 1; i>=0; i--){
@@ -86,6 +88,11 @@ void UI::Draw(Scenario& CurrentScenario){
             continue;
         }
         DrawCircleV(CurrentScenario.Balls[i].Position, CurrentScenario.Balls[i].Radius, CurrentScenario.Balls[i].BallColor);
+    }
+
+    //Draw Cannon
+    if(CurrentScenario.BallCannon.Rendered){
+        DrawRectangleV(CurrentScenario.BallCannon.Position, CurrentScenario.BallCannon.Size, CurrentScenario.BallCannon.CannonColor);
     }
 
 
