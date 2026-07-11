@@ -1,6 +1,8 @@
 #ifndef UI_H
 #define UI_H
 
+#include<string>
+
 //forward declare Scenario to avoid compiler loop
 class Scenario;
 
@@ -18,6 +20,7 @@ class UI{
             CANNON
         };
         UIMode CurrentMode = UIMode::CANNON;
+        std::string CurrentModeStr = "CANNON";
         UI(int, int, bool, int, int);
         int WindowX();
         int WindowY();

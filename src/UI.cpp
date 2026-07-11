@@ -4,6 +4,7 @@
 #include "Scenario.h"
 #include <ranges>
 #include <cmath>
+#include<string>
 
 UI::UI(int windowX, int windowY, bool statusBarEnabled, int statusBarHeight, int desiredScenario)
     : _windowX(windowX), _windowY(windowY), _statusBarEnabled(statusBarEnabled), DesiredScenario(desiredScenario), _statusBarHeight(statusBarHeight) 
@@ -46,6 +47,7 @@ void UI::_drawStatusBar(Scenario& CurrentScenario)
     Color c;
     if(CurrentScenario.Balls.size()>99) {c = YELLOW;} else {c = GREEN;}
     DrawText(ballCountStr.c_str(), 150, (windowY + 0.5*_statusBarHeight - 10), 20, c);
+    DrawText(CurrentModeStr.c_str(), 300, (windowY + 0.5*_statusBarHeight - 10), 20, BLACK);
     std::string scenStr = "LOADED SCENARIO: " + CurrentScenario.LoadedScenarioName;
     int scenStrWidth = MeasureText(scenStr.c_str(), 20);
     DrawText(scenStr.c_str(), WindowX() - 10 - scenStrWidth, (windowY + 0.5*_statusBarHeight - 10), 20, BLACK);
@@ -172,6 +174,7 @@ void UI::ProcessInput(Scenario& CurrentScenario){
 
             if(IsKeyPressed(KEY_M)){
                 CurrentMode = UIMode::CANNON;
+                CurrentModeStr = "CANNON";
             }
 
             break;
@@ -199,6 +202,7 @@ void UI::ProcessInput(Scenario& CurrentScenario){
 
             if(IsKeyPressed(KEY_M)){
                 CurrentMode = UIMode::DEVELOPER;
+                CurrentModeStr = "DEVELOPER";
             }
             break;
         }
