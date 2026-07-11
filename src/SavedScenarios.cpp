@@ -105,7 +105,8 @@ void Scenario::LoadScenario(Scenario::SavedScenarios desiredScenario, int window
             LoadedScenarioName = "BASIC PEGGLE";
 
             BallBasket = Basket({(Vector2){150,40},(Vector2){50,windowY-50},(Vector2){windowX-50-150,windowY-50}, 0.2f, 0.0f, RED});
-            BallCannon = Cannon((Vector2){windowX/2, 0},(Vector2){50,50},90, RAYWHITE, 10, 10);
+            
+            BallCannon = Cannon((Vector2){windowX/2, 0}, 50, 10, 90, RAYWHITE, 1000, 10);
 
             int paddingX = 200;
             int paddingY = 250;

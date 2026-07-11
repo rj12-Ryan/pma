@@ -12,6 +12,7 @@ class PhysicsEngine{
         void _ballPegCollision();
         void _ballBasketCollision();
         void _moveBasket();
+        void _updateCannon();
     public:
         int Gravity;
         float DT;

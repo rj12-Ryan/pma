@@ -21,6 +21,7 @@ void PhysicsEngine::_updatePhysics(){
     _ballWallCollision();
     _ballPegCollision();
     _moveBasket();
+    _updateCannon();
     _ballBasketCollision();
 }
 
@@ -123,6 +124,20 @@ void PhysicsEngine::_moveBasket(){
 
     bb.Position.x = bb.Start.x + ppt * (bb.End.x - bb.Start.x);
     bb.Position.y = bb.Start.y + ppt * (bb.End.y - bb.Start.y);
+}
+
+void PhysicsEngine::_updateCannon(){
+    Vector2 p1 = CurrentScenario.BallCannon.Position;
+    Vector2 p2 = GetMousePosition();
+
+    float delta_y = p2.y - p1.y;
+    float delta_x = p2.x - p1.x;
+
+    float radians = atan2(delta_y, delta_x);
+
+    float degrees = (radians * (180.0/PI));
+    
+    CurrentScenario.BallCannon.SetPointerAngle(degrees);
 }
 
 void PhysicsEngine::Step(){

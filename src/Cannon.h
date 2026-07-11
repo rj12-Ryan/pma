@@ -3,16 +3,20 @@
 #include <raylib.h>
 
 class Cannon{
+    private:
+        float _pointerAngle;
     public:
-        Cannon(Vector2 position, Vector2 size, float aimAngle, Color cannonColor, float strength, int ballsRemaining);
+        Cannon(Vector2 position, float baseRad, float pointerRad, float pointerAngle, Color cannonColor, float strength, int ballsRemaining);
         Cannon();
         bool Rendered;
         Vector2 Position;
-        Vector2 Size;
-        float AimAngle;
+        float BaseRad;
+        float PointerRad;
+        Vector2 PointerPoint;
         Color CannonColor;
         float Strength;
         int BallsRemaining;
+        void SetPointerAngle(float angDeg);
 };
 
 

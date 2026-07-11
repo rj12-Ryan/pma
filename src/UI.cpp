@@ -3,6 +3,7 @@
 #include<string>
 #include "Scenario.h"
 #include <ranges>
+#include <cmath>
 
 UI::UI(int windowX, int windowY, bool statusBarEnabled, int statusBarHeight, int desiredScenario)
     : _windowX(windowX), _windowY(windowY), _statusBarEnabled(statusBarEnabled), DesiredScenario(desiredScenario), _statusBarHeight(statusBarHeight) 
@@ -92,7 +93,8 @@ void UI::Draw(Scenario& CurrentScenario){
 
     //Draw Cannon
     if(CurrentScenario.BallCannon.Rendered){
-        DrawRectangleV(CurrentScenario.BallCannon.Position, CurrentScenario.BallCannon.Size, CurrentScenario.BallCannon.CannonColor);
+        DrawCircleV(CurrentScenario.BallCannon.Position, CurrentScenario.BallCannon.BaseRad, CurrentScenario.BallCannon.CannonColor);
+        DrawCircleV(CurrentScenario.BallCannon.PointerPoint, CurrentScenario.BallCannon.PointerRad, RED);
     }
 
 
@@ -102,68 +104,105 @@ void UI::Draw(Scenario& CurrentScenario){
 }
 
 void UI::ProcessInput(Scenario& CurrentScenario){
-    if(IsKeyPressed(KEY_R)){
-        CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
-    }
-    if(IsKeyPressed(KEY_C)){
-        CurrentScenario.ClearBalls();
-    }
-    if(IsKeyPressed(KEY_RIGHT)){
-        DesiredScenario = static_cast<int>(CurrentScenario.NextScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario)));
-        CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
-    }
-    if(IsKeyPressed(KEY_LEFT)){
-        DesiredScenario = static_cast<int>(CurrentScenario.PreviousScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario)));
-        CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
-    }
-    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-        Vector2 mouse = GetMousePosition();
-        float directionalVelocity = 1500;
-        Vector2 v = {0,0};
-            if(IsKeyDown(KEY_W)){
-                v = {v.x + 0, v.y + -directionalVelocity}; 
+    switch(CurrentMode){
+        case UIMode::DEVELOPER:{
+            if(IsKeyPressed(KEY_R)){
+                CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
             }
-            if(IsKeyDown(KEY_A)){
-                v = {v.x + -directionalVelocity,v.y + 0};
+            if(IsKeyPressed(KEY_C)){
+                CurrentScenario.ClearBalls();
             }
-            if(IsKeyDown(KEY_S)){
-                v = {v.x + 0, v.y + directionalVelocity};
+            if(IsKeyPressed(KEY_RIGHT)){
+                DesiredScenario = static_cast<int>(CurrentScenario.NextScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario)));
+                CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
             }
-            if(IsKeyDown(KEY_D)){
-                v = {v.x + directionalVelocity, v.y + 0};
+            if(IsKeyPressed(KEY_LEFT)){
+                DesiredScenario = static_cast<int>(CurrentScenario.PreviousScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario)));
+                CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
             }
-        CurrentScenario.NewBall(Ball{mouse, v, 10, WHITE});
-    }
+            if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                Vector2 mouse = GetMousePosition();
+                float directionalVelocity = 1500;
+                Vector2 v = {0,0};
+                    if(IsKeyDown(KEY_W)){
+                        v = {v.x + 0, v.y + -directionalVelocity}; 
+                    }
+                    if(IsKeyDown(KEY_A)){
+                        v = {v.x + -directionalVelocity,v.y + 0};
+                    }
+                    if(IsKeyDown(KEY_S)){
+                        v = {v.x + 0, v.y + directionalVelocity};
+                    }
+                    if(IsKeyDown(KEY_D)){
+                        v = {v.x + directionalVelocity, v.y + 0};
+                    }
+                CurrentScenario.NewBall(Ball{mouse, v, 10, WHITE});
+            }
 
-    //Right Click Fountain
-    bool prevBallOldEnough;
-    if(CurrentScenario.Balls.empty()){
-        prevBallOldEnough = true;
-    }
-    else{
-        prevBallOldEnough = (CurrentScenario.Balls.back().Age>50);
-    }
-    if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && prevBallOldEnough){
-        Vector2 mouse = GetMousePosition();
-        float directionalVelocity = 1500;
-        Vector2 v = {0,0};
-            if(IsKeyDown(KEY_W)){
-                v = {v.x + 0, v.y + -directionalVelocity}; 
+            //Right Click Fountain
+            bool prevBallOldEnough;
+            if(CurrentScenario.Balls.empty()){
+                prevBallOldEnough = true;
             }
-            if(IsKeyDown(KEY_A)){
-                v = {v.x + -directionalVelocity,v.y + 0};
+            else{
+                prevBallOldEnough = (CurrentScenario.Balls.back().Age>50);
             }
-            if(IsKeyDown(KEY_S)){
-                v = {v.x + 0, v.y + directionalVelocity};
+            if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && prevBallOldEnough){
+                Vector2 mouse = GetMousePosition();
+                float directionalVelocity = 1500;
+                Vector2 v = {0,0};
+                    if(IsKeyDown(KEY_W)){
+                        v = {v.x + 0, v.y + -directionalVelocity}; 
+                    }
+                    if(IsKeyDown(KEY_A)){
+                        v = {v.x + -directionalVelocity,v.y + 0};
+                    }
+                    if(IsKeyDown(KEY_S)){
+                        v = {v.x + 0, v.y + directionalVelocity};
+                    }
+                    if(IsKeyDown(KEY_D)){
+                        v = {v.x + directionalVelocity, v.y + 0};
+                    }
+                    CurrentScenario.NewBall(Ball{mouse, v, 10, WHITE});
             }
-            if(IsKeyDown(KEY_D)){
-                v = {v.x + directionalVelocity, v.y + 0};
+
+            if(IsKeyPressed(KEY_TAB)){
+                ToggleStatus();
             }
-            CurrentScenario.NewBall(Ball{mouse, v, 10, WHITE});
-    }
+
+            if(IsKeyPressed(KEY_M)){
+                CurrentMode = UIMode::CANNON;
+            }
+
+            break;
+        }
+
+        case UIMode::CANNON:{
+            if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                Vector2 ballVelocity;
+                Vector2 p1 = CurrentScenario.BallCannon.PointerPoint;
+                Vector2 p2 = GetMousePosition();
+                float dx = p2.x - p1.x;
+                float dy = p2.y - p1.y;
+
+                float length = sqrtf(dx*dx + dy*dy);
+
+                if (length == 0.0f){
+                    ballVelocity = {0,0};
+                }
+                
+                ballVelocity = {(dx/length)*CurrentScenario.BallCannon.Strength,(dy/length)*CurrentScenario.BallCannon.Strength};
 
 
-    if(IsKeyPressed(KEY_TAB)){
-        ToggleStatus();
+                CurrentScenario.NewBall(Ball{CurrentScenario.BallCannon.PointerPoint, ballVelocity, 10, WHITE});
+            }
+
+            if(IsKeyPressed(KEY_M)){
+                CurrentMode = UIMode::DEVELOPER;
+            }
+            break;
+        }
+
     }
+    
 }

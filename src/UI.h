@@ -13,6 +13,11 @@ class UI{
         void _drawStatusBar(Scenario&);
         int _drawCounter = 0;
     public:
+        enum class UIMode{
+            DEVELOPER,
+            CANNON
+        };
+        UIMode CurrentMode = UIMode::CANNON;
         UI(int, int, bool, int, int);
         int WindowX();
         int WindowY();
