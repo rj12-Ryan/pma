@@ -97,6 +97,12 @@ void UI::Draw(Scenario& CurrentScenario){
     if(CurrentScenario.BallCannon.Rendered){
         DrawCircleV(CurrentScenario.BallCannon.Position, CurrentScenario.BallCannon.BaseRad, CurrentScenario.BallCannon.CannonColor);
         DrawCircleV(CurrentScenario.BallCannon.PointerPoint, CurrentScenario.BallCannon.PointerRad, RED);
+        
+        const int numFontSize = 50;
+        std::string numStr = std::to_string(CurrentScenario.BallCannon.BallsRemaining);
+        int textWidth = MeasureText(numStr.c_str(), numFontSize);
+
+        DrawText(numStr.c_str(), CurrentScenario.BallCannon.Position.x - (textWidth/2), CurrentScenario.BallCannon.Position.y + 5, numFontSize, BLACK);
     }
 
 
@@ -182,24 +188,32 @@ void UI::ProcessInput(Scenario& CurrentScenario){
 
         case UIMode::CANNON:{
             if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-                Vector2 ballVelocity;
-                Vector2 p1 = CurrentScenario.BallCannon.PointerPoint;
-                Vector2 p2 = GetMousePosition();
-                float dx = p2.x - p1.x;
-                float dy = p2.y - p1.y;
+                if(CurrentScenario.BallCannon.BallsRemaining>0){
+                    Vector2 ballVelocity;
+                    Vector2 p1 = CurrentScenario.BallCannon.PointerPoint;
+                    Vector2 p2 = GetMousePosition();
+                    float dx = p2.x - p1.x;
+                    float dy = p2.y - p1.y;
 
-                float length = sqrtf(dx*dx + dy*dy);
+                    float length = sqrtf(dx*dx + dy*dy);
 
-                if (length == 0.0f){
-                    ballVelocity = {0,0};
+                    if (length == 0.0f){
+                        ballVelocity = {0,0};
+                    }
+
+                    ballVelocity = {(dx/length)*CurrentScenario.BallCannon.Strength,(dy/length)*CurrentScenario.BallCannon.Strength};
+
+                    CurrentScenario.NewBall(Ball{CurrentScenario.BallCannon.PointerPoint, ballVelocity, 10, WHITE});
+                    
+                    CurrentScenario.BallCannon.BallsRemaining--;
                 }
                 
-                ballVelocity = {(dx/length)*CurrentScenario.BallCannon.Strength,(dy/length)*CurrentScenario.BallCannon.Strength};
-
-
-                CurrentScenario.NewBall(Ball{CurrentScenario.BallCannon.PointerPoint, ballVelocity, 10, WHITE});
             }
 
+            if(IsKeyPressed(KEY_R)){
+                CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
+            }
+            
             if(IsKeyPressed(KEY_M)){
                 CurrentMode = UIMode::DEVELOPER;
                 CurrentModeStr = "DEVELOPER";

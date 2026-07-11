@@ -3,11 +3,10 @@
 #include <stdexcept>
 #include <cmath>
 
-Cannon::Cannon(Vector2 position, float baseRad, float pointerRad, float pointerAngle, Color cannonColor, float strength, int ballsRemaining)
-    :Position(position), BaseRad(baseRad), PointerRad(pointerRad), CannonColor(cannonColor), Strength(strength), BallsRemaining(ballsRemaining)
+Cannon::Cannon(Vector2 position, float baseRad, float pointerAngle, Color cannonColor, float strength, int ballsRemaining)
+    :Position(position), BaseRad(baseRad), CannonColor(cannonColor), Strength(strength), BallsRemaining(ballsRemaining)
 {
     Rendered = true;
-    SetPointerAngle(pointerAngle);
 }
 
 Cannon::Cannon(){

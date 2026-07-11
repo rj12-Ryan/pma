@@ -25,6 +25,7 @@ class ScenarioLoader{
             PEG,
             WALL,
             BALL,
+            CANNON,
             GRID
         };
         Section CurrentSection = Section::none;

@@ -69,6 +69,7 @@ void PhysicsEngine::_ballBasketCollision(){
     }
     for(BallID id : toRemove){
         CurrentScenario.RemoveBall(id);
+        CurrentScenario.BallCannon.BallsRemaining++;
     }
 }
 

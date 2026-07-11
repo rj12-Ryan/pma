@@ -47,7 +47,7 @@ void ScenarioLoader::Parse(){
 }
 
 bool ScenarioLoader::IsSection(std::string line){
-    std::unordered_set<std::string> valid_sections = {"INFO", "BASKET", "PEG", "WALL", "BALL", "GRID"};
+    std::unordered_set<std::string> valid_sections = {"INFO", "BASKET", "PEG", "WALL", "BALL", "CANNON", "GRID"};
     return valid_sections.count(line) == 1;
 }
 
@@ -78,6 +78,10 @@ void ScenarioLoader::FinishCurrentSection(){
             }
             CurrentScenario.NewWall(CurrentWall->Build());
             PreviousSection = Section::WALL;
+            break;
+        }
+        case Section::CANNON:{
+            CurrentScenario.BallCannon.Rendered = true;
             break;
         }
         case Section::PEG:{
@@ -261,6 +265,32 @@ void ScenarioLoader::ParseAssignment(std::string line){
             }
             break;
         }
+        case Section::CANNON:
+        {
+            if (loe == "POSITION"){
+                CurrentScenario.BallCannon.Position = ParseVector2(roe);
+            }
+            else if (loe == "BASERAD"){
+                CurrentScenario.BallCannon.BaseRad = ParseFloat(roe);
+            }
+            else if (loe == "POINTERRAD"){
+                CurrentScenario.BallCannon.PointerRad = ParseFloat(roe);
+            }
+            else if (loe == "STRENGTH"){
+                CurrentScenario.BallCannon.Strength = ParseFloat(roe);
+            }
+            else if (loe == "BALLSREMAINING"){
+                CurrentScenario.BallCannon.BallsRemaining = ParseFloat(roe);
+            }
+            else if(loe == "COLOR"){
+                CurrentScenario.BallCannon.CannonColor = ParseColor(roe);
+            }
+            else{
+                ParserError("'" + loe + "' is not a valid property for its section");
+            }
+            break;
+        }
+
         case Section::PEG:
         {
             if (loe == "POSITION"){
@@ -428,6 +458,7 @@ ScenarioLoader::Section ScenarioLoader::StrToSection(std::string str){
     if (str == "PEG") s = Section::PEG;
     if (str == "WALL") s = Section::WALL;
     if (str == "BALL") s = Section::BALL;
+    if (str == "CANNON") s = Section::CANNON;
     if (str == "GRID") s = Section::GRID;
     return s;
 }
