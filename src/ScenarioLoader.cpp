@@ -84,6 +84,10 @@ void ScenarioLoader::FinishCurrentSection(){
             CurrentScenario.BallCannon.Rendered = true;
             break;
         }
+        case Section::BASKET:{
+            CurrentScenario.BallBasket.Rendered = true;
+            break;
+        }
         case Section::PEG:{
             if(!CurrentPeg->IsComplete() && !CurrentPeg->isGridding){
                 ParserError("Incomplete Peg defintion");

@@ -9,7 +9,8 @@ void Scenario::LoadScenario(Scenario::SavedScenarios desiredScenario, int window
     Balls.clear();
     Walls.clear();
     Pegs.clear();
-    BallBasket = Basket({(Vector2){0,0},(Vector2){0,0},(Vector2){0,0}, 100.0f, 0.0f, MAGENTA}); //Construct Basket with default values to be overwritten by SavedScenario
+    BallBasket = Basket();
+    BallCannon = Cannon();
     NextBallID = 1;
     NextWallID = 1;
     NextPegID = 1;

@@ -23,6 +23,36 @@ void PhysicsEngine::_updatePhysics(){
     _moveBasket();
     _updateCannon();
     _ballBasketCollision();
+    _checkGameState();
+}
+
+void PhysicsEngine::_checkGameState(){
+    //make sure we are actually using a cannon in this scenario
+    if(CurrentScenario.BallCannon.Rendered){
+        bool AllBallsGone = (CurrentScenario.Balls.size() == 0);
+        bool CannonEmpty = (CurrentScenario.BallCannon.BallsRemaining == 0);
+        bool AllTargetPegsCleared = true;
+        
+        for(Peg& p : CurrentScenario.Pegs){
+            if(p.CurrentPegType == Peg::PegType::TARGET){
+                AllTargetPegsCleared = false;
+                break;
+            }
+        }
+    
+        if(AllBallsGone && CannonEmpty){
+            if(AllTargetPegsCleared){
+                CurrentScenario.Popup.Text = "YOU ARE WINNER!";
+                CurrentScenario.Popup.Enabled = true;
+            }
+            else{
+                CurrentScenario.Popup.Text = "YOU LOSE";
+                CurrentScenario.Popup.Enabled = true;
+            }
+        }
+    }
+
+
 }
 
 void PhysicsEngine::_ballWallCollision(){
@@ -131,12 +161,30 @@ void PhysicsEngine::_updateCannon(){
     Vector2 p1 = CurrentScenario.BallCannon.Position;
     Vector2 p2 = GetMousePosition();
 
+    const int MAXANGLE = 170;
+    const int MINANGLE = 10;
+
     float delta_y = p2.y - p1.y;
     float delta_x = p2.x - p1.x;
 
     float radians = atan2(delta_y, delta_x);
 
     float degrees = (radians * (180.0/PI));
+    
+    //check mouse collision
+    if(CheckCollisionPointCircle(p2, CurrentScenario.BallCannon.Position, CurrentScenario.BallCannon.BaseRad+10)){
+        CurrentScenario.BallCannon.MouseColliding = true;
+    }
+    else{
+        CurrentScenario.BallCannon.MouseColliding = false;
+    }
+
+    if(degrees>MAXANGLE){
+        degrees=MAXANGLE;
+    }
+    if(degrees<MINANGLE){
+        degrees=MINANGLE;
+    }
     
     CurrentScenario.BallCannon.SetPointerAngle(degrees);
 }

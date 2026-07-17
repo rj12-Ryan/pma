@@ -66,6 +66,12 @@ class Scenario{
         SavedScenarios NextScenario(SavedScenarios current);
         SavedScenarios PreviousScenario(SavedScenarios current);
         void LoadScenario(SavedScenarios, int windowX, int windowY);
+        struct PopupMessage{
+            bool Enabled;
+            std::string Text;
+            Vector2 Size = {500, 200};
+        };
+        PopupMessage Popup;
 };
 
 #endif

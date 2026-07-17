@@ -53,6 +53,20 @@ void UI::_drawStatusBar(Scenario& CurrentScenario)
     DrawText(scenStr.c_str(), WindowX() - 10 - scenStrWidth, (windowY + 0.5*_statusBarHeight - 10), 20, BLACK);
 }
 
+void UI::_drawPopup(Scenario& CurrentScenario){
+    Vector2 size = CurrentScenario.Popup.Size;
+    std::string text = CurrentScenario.Popup.Text;
+
+    Vector2 topCorner = {(WindowX()/2)-(size.x/2), (20)};
+    DrawRectangleV(topCorner, size, GRAY);
+    
+    const int FONTSIZE = 40;
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), FONTSIZE, 1);
+    Vector2 textPos = {(WindowX()/2)-(textSize.x/2)-2, 20+size.y/2-(textSize.y/2)};
+    DrawText(text.c_str(),textPos.x, textPos.y, FONTSIZE, BLACK);
+}
+
+
 void UI::Draw(Scenario& CurrentScenario){
     _drawCounter++;
 
@@ -106,49 +120,74 @@ void UI::Draw(Scenario& CurrentScenario){
 
         bool collided = false;
 
-        for(int i = 0; i<500; i+=20){
-            if(!collided){
-                float currentT = (1.0f/1000.0f) * i;
+        //Only draw aimer if we are in cannon mode
+        if(CurrentMode == UIMode::CANNON && !CurrentScenario.BallCannon.MouseColliding){
+            for(int i = 0; i<500; i+=20){
+                if(!collided){
+                    float currentT = (1.0f/1000.0f) * i;
 
-                //TODO: Factor out the ball velocity code here to be a function of the BallCannon as we reuse it 
-                Vector2 ballVelocity;
-                Vector2 p1 = CurrentScenario.BallCannon.PointerPoint;
-                Vector2 p2 = GetMousePosition();
-                float dx = p2.x - p1.x;
-                float dy = p2.y - p1.y;
-                float length = sqrtf(dx*dx + dy*dy);
-                if (length == 0.0f){
-                    ballVelocity = {0,0};
-                }
-                ballVelocity = {(dx/length)*CurrentScenario.BallCannon.Strength,(dy/length)*CurrentScenario.BallCannon.Strength};
-
-                //TODO: need to actually pass in DT and GRAVITY to these from PhysicsEngine
-                float xPos = p1.x + ballVelocity.x*currentT;
-                float yPos = p1.y + ballVelocity.y*currentT + 0.5*700*currentT*currentT;
-
-                Vector2 drawPoint = {xPos, yPos};
-
-                //Check Collision With Pegs to stop early
-                for(Peg& p : CurrentScenario.Pegs){
-                    if(CheckCollisionCircles(drawPoint, 10, p.Position, p.Radius+5)){
-                        collided = true;
+                    //TODO: Factor out the ball velocity code here to be a function of the BallCannon as we reuse it 
+                    Vector2 ballVelocity;
+                    Vector2 p1 = CurrentScenario.BallCannon.PointerPoint;
+                    Vector2 p2 = GetMousePosition();
+                    float dx = p2.x - p1.x;
+                    float dy = p2.y - p1.y;
+                    float length = sqrtf(dx*dx + dy*dy);
+                    if (length == 0.0f){
+                        ballVelocity = {0,0};
                     }
+                    ballVelocity = {(dx/length)*CurrentScenario.BallCannon.Strength,(dy/length)*CurrentScenario.BallCannon.Strength};
+
+                    //TODO: need to actually pass in DT and GRAVITY to these from PhysicsEngine
+                    float xPos = p1.x + ballVelocity.x*currentT;
+                    float yPos = p1.y + ballVelocity.y*currentT + 0.5*700*currentT*currentT;
+
+                    Vector2 drawPoint = {xPos, yPos};
+
+                    //Check Collision With Pegs to stop early
+                    for(Peg& p : CurrentScenario.Pegs){
+                        if(CheckCollisionCircles(drawPoint, 10, p.Position, p.Radius+5)){
+                            collided = true;
+                        }
+                    }
+                    DrawCircleV(drawPoint, 5, WHITE);
                 }
-                DrawCircleV(drawPoint, 5, WHITE);
             }
-            
         }
+        
+    }
+
+    if(CurrentScenario.Popup.Enabled){
+        CurrentMode = UIMode::POPUP;
+        _drawPopup(CurrentScenario);
     }
 
 
     if(_statusBarEnabled){
         _drawStatusBar(CurrentScenario);
     }
+
 }
 
 void UI::ProcessInput(Scenario& CurrentScenario){
     switch(CurrentMode){
+        case UIMode::POPUP:{
+            CurrentModeStr = "POPUP";
+            if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                CurrentScenario.Popup.Enabled = false;
+                CurrentMode = UIMode::CANNON;
+                CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
+            }
+            break;
+        }
+
         case UIMode::DEVELOPER:{
+            CurrentModeStr = "DEVELOPER";
+            if(IsKeyPressed(KEY_P)){
+                CurrentScenario.Popup.Text = "Test Popup";
+                CurrentScenario.Popup.Enabled = true;
+            }
+
             if(IsKeyPressed(KEY_R)){
                 CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
             }
@@ -222,8 +261,9 @@ void UI::ProcessInput(Scenario& CurrentScenario){
         }
 
         case UIMode::CANNON:{
+            CurrentModeStr = "CANNON";
             if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-                if(CurrentScenario.BallCannon.BallsRemaining>0){
+                if(CurrentScenario.BallCannon.BallsRemaining>0 && !CurrentScenario.BallCannon.MouseColliding){
                     Vector2 ballVelocity;
                     Vector2 p1 = CurrentScenario.BallCannon.PointerPoint;
                     Vector2 p2 = GetMousePosition();
@@ -236,9 +276,15 @@ void UI::ProcessInput(Scenario& CurrentScenario){
                         ballVelocity = {0,0};
                     }
 
-                    ballVelocity = {(dx/length)*CurrentScenario.BallCannon.Strength,(dy/length)*CurrentScenario.BallCannon.Strength};
+                    float normX = dx/length;
+                    float normY = dy/length;
+                    const float spawnOffsetFactor = 10;
 
-                    CurrentScenario.NewBall(Ball{CurrentScenario.BallCannon.PointerPoint, ballVelocity, 10, WHITE});
+                    Vector2 ballPosition = {CurrentScenario.BallCannon.PointerPoint.x + (normX*spawnOffsetFactor), CurrentScenario.BallCannon.PointerPoint.y + (normY*spawnOffsetFactor)};
+
+                    ballVelocity = {normX*CurrentScenario.BallCannon.Strength, normY*CurrentScenario.BallCannon.Strength};
+
+                    CurrentScenario.NewBall(Ball{ballPosition, ballVelocity, 10, WHITE});
                     
                     CurrentScenario.BallCannon.BallsRemaining--;
                 }
@@ -259,3 +305,4 @@ void UI::ProcessInput(Scenario& CurrentScenario){
     }
     
 }
+

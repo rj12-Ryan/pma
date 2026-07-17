@@ -17,6 +17,7 @@ class Cannon{
         float Strength;
         int BallsRemaining;
         void SetPointerAngle(float angDeg);
+        bool MouseColliding = false;
 };
 
 

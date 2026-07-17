@@ -2,8 +2,9 @@
 #define UI_H
 
 #include<string>
+#include<raylib.h>
 
-//forward declare Scenario to avoid compiler loop
+//forward declare Scenario
 class Scenario;
 
 class UI{
@@ -13,11 +14,13 @@ class UI{
         int _windowX;
         int _windowY;
         void _drawStatusBar(Scenario&);
+        void _drawPopup(Scenario&);
         int _drawCounter = 0;
     public:
         enum class UIMode{
             DEVELOPER,
-            CANNON
+            CANNON,
+            POPUP
         };
         UIMode CurrentMode = UIMode::CANNON;
         std::string CurrentModeStr = "CANNON";
