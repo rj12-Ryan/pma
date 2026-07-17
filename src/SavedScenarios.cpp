@@ -15,6 +15,7 @@ void Scenario::LoadScenario(Scenario::SavedScenarios desiredScenario, int window
     NextWallID = 1;
     NextPegID = 1;
     flags = 0;
+    _score = 0;
     SavedScenarios ss = desiredScenario;
     switch(ss){
         //SCENARIO COUNT (UNREACHABLE)

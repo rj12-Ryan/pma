@@ -20,6 +20,7 @@ int UI::WindowY(){
 
 void UI::InitPMAWindow(){
     InitAudioDevice(); 
+    SetMasterVolume(0.2f);
     if(_statusBarEnabled){
         InitWindow(WindowX(), WindowY()+_statusBarHeight, "Raylib");
     }
@@ -158,11 +159,16 @@ void UI::Draw(Scenario& CurrentScenario){
         
     }
 
+    //Draw Popup
     if(CurrentScenario.Popup.Enabled){
         CurrentMode = UIMode::POPUP;
         _drawPopup(CurrentScenario);
     }
 
+    //Draw Score
+    //TODO: Allow for scoreboard location and size to be defined in PMA file
+    std::string scoreStr = "SCORE: " + std::to_string(CurrentScenario.GetScore());
+    DrawText(scoreStr.c_str(), 60, 30, 40, WHITE);
 
     if(_statusBarEnabled){
         _drawStatusBar(CurrentScenario);
@@ -288,13 +294,20 @@ void UI::ProcessInput(Scenario& CurrentScenario){
 
                     ballVelocity = {normX*CurrentScenario.BallCannon.Strength, normY*CurrentScenario.BallCannon.Strength};
 
-                    CurrentScenario.Sounds.Play(CurrentScenario.Sounds.Cannon);
+                    if(CurrentScenario.CannonSoundEnabled){
+                        CurrentScenario.Sounds.Play(CurrentScenario.Sounds.Cannon);
+                    }
+                    
 
                     CurrentScenario.NewBall(Ball{ballPosition, ballVelocity, 10, WHITE});
                     
                     CurrentScenario.BallCannon.BallsRemaining--;
                 }
                 
+            }
+
+            if(IsKeyPressed(KEY_S)){
+                CurrentScenario.CannonSoundEnabled = !CurrentScenario.CannonSoundEnabled;
             }
 
             if(IsKeyPressed(KEY_R)){

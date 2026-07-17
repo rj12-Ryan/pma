@@ -1,6 +1,14 @@
 #include "Scenario.h"
 #include "UI.h"
 
+int Scenario::GetScore(){
+    return _score;
+}
+
+void Scenario::AddScore(int s){
+    _score += s;
+}
+
 void Scenario::NewBall(Ball ball){
     Ball b = ball;
     b.ID = NextBallID++;

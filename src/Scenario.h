@@ -17,6 +17,7 @@
 class Scenario{
     private:
         u_int32_t flags = 0;
+        int _score = 0;
     public:
         enum class SavedScenarios{
             EMPTY,
@@ -46,7 +47,7 @@ class Scenario{
         std::unordered_map<WallID, size_t> WallLookup;
         std::unordered_map<PegID, size_t> PegLookup;
 
-        AudioEngine Sounds = AudioEngine("src/resources/sounds");
+        AudioEngine Sounds = AudioEngine("src/resources/sounds/Zen");
 
         BallID NextBallID = 1;
         PegID NextPegID = 1;
@@ -75,6 +76,9 @@ class Scenario{
         };
         PopupMessage Popup;
         bool MissAudioEnabled = false;
+        bool CannonSoundEnabled = true;
+        int GetScore();
+        void AddScore(int);
 };
 
 #endif
