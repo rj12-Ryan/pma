@@ -103,6 +103,41 @@ void UI::Draw(Scenario& CurrentScenario){
         int textWidth = MeasureText(numStr.c_str(), numFontSize);
 
         DrawText(numStr.c_str(), CurrentScenario.BallCannon.Position.x - (textWidth/2), CurrentScenario.BallCannon.Position.y + 5, numFontSize, BLACK);
+
+        bool collided = false;
+
+        for(int i = 0; i<500; i+=20){
+            if(!collided){
+                float currentT = (1.0f/1000.0f) * i;
+
+                //TODO: Factor out the ball velocity code here to be a function of the BallCannon as we reuse it 
+                Vector2 ballVelocity;
+                Vector2 p1 = CurrentScenario.BallCannon.PointerPoint;
+                Vector2 p2 = GetMousePosition();
+                float dx = p2.x - p1.x;
+                float dy = p2.y - p1.y;
+                float length = sqrtf(dx*dx + dy*dy);
+                if (length == 0.0f){
+                    ballVelocity = {0,0};
+                }
+                ballVelocity = {(dx/length)*CurrentScenario.BallCannon.Strength,(dy/length)*CurrentScenario.BallCannon.Strength};
+
+                //TODO: need to actually pass in DT and GRAVITY to these from PhysicsEngine
+                float xPos = p1.x + ballVelocity.x*currentT;
+                float yPos = p1.y + ballVelocity.y*currentT + 0.5*700*currentT*currentT;
+
+                Vector2 drawPoint = {xPos, yPos};
+
+                //Check Collision With Pegs to stop early
+                for(Peg& p : CurrentScenario.Pegs){
+                    if(CheckCollisionCircles(drawPoint, 10, p.Position, p.Radius+5)){
+                        collided = true;
+                    }
+                }
+                DrawCircleV(drawPoint, 5, WHITE);
+            }
+            
+        }
     }
 
 
