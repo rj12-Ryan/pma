@@ -81,11 +81,11 @@ void UI::Draw(Scenario& CurrentScenario){
         Color c;
         switch(peg.CurrentPegType){
             case Peg::PegType::DEFAULT:{
-                c = BLUE;
+                c = GetColor(0x7BA388FF);
             break;
             }
             case Peg::PegType::TARGET:{
-                c = ORANGE;
+                c = GetColor(0xDA7DA0FF);
             break;
             }
         }

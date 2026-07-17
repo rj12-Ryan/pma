@@ -21,13 +21,30 @@ void Scenario::NewBall(Ball ball){
 void Scenario::RemoveBall(BallID id, bool playMissSound){
     std::vector<PegID> pegsHit = GetBall(id).PegsHit;
     if(!pegsHit.empty()){
+        int mult = 1;
+        if(!playMissSound){
+            mult = 2;
+        }
         for(PegID p : pegsHit){
+            Peg& peg = GetPeg(p);
+            
+            switch(peg.CurrentPegType){
+                case Peg::PegType::DEFAULT:{
+                    AddScore(10 * mult);
+                    break;
+                }
+                case Peg::PegType::TARGET:{
+                    AddScore(20 * mult);
+                    break;
+                }
+            }
             RemovePeg(p);
             Sounds.Play(Sounds.Poof);
         }
     }
 
     if(pegsHit.empty() && MissAudioEnabled && playMissSound){
+        _score = _score * 0.80;
         Sounds.Play(Sounds.Miss);
     }
 

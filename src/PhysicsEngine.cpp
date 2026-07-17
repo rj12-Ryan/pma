@@ -115,7 +115,7 @@ void PhysicsEngine::_ballPegCollision(){
             
             if (distance<minDistance){
 
-                
+                CurrentScenario.AddScore(1);
                 CurrentScenario.Sounds.Play(CurrentScenario.Sounds.Notes[GetRandomValue(0,4)]);
 
                 if(!peg.Hit){

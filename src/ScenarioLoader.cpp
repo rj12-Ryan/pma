@@ -502,7 +502,11 @@ Color ScenarioLoader::ParseColor(const std::string& str)
     {"LIME", LIME},
     {"GOLD", GOLD},
     {"MAROON", MAROON},
-    {"RAYWHITE", RAYWHITE}
+    {"RAYWHITE", RAYWHITE},
+    {"HONEYSUCKLE", GetColor(0xDA7DA0FF)},
+    {"BABYBLUE", GetColor(0xC1DBEDFF)},
+    {"COFFEEPOT", GetColor(0x6E5E5EFF)},
+    {"EMERALD", GetColor(0x7BA388FF)}
     };
 
     auto it = ColorMap.find(str);
