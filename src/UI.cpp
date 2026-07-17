@@ -19,6 +19,7 @@ int UI::WindowY(){
 }
 
 void UI::InitPMAWindow(){
+    InitAudioDevice(); 
     if(_statusBarEnabled){
         InitWindow(WindowX(), WindowY()+_statusBarHeight, "Raylib");
     }
@@ -101,7 +102,7 @@ void UI::Draw(Scenario& CurrentScenario){
     //Draw All Balls in the List
     for(int i=CurrentScenario.Balls.size() - 1; i>=0; i--){
         if(CurrentScenario.Balls[i].Position.y > WindowY()){
-            CurrentScenario.RemoveBall(CurrentScenario.Balls[i].ID);
+            CurrentScenario.RemoveBall(CurrentScenario.Balls[i].ID, true);
             continue;
         }
         DrawCircleV(CurrentScenario.Balls[i].Position, CurrentScenario.Balls[i].Radius, CurrentScenario.Balls[i].BallColor);
@@ -173,6 +174,7 @@ void UI::ProcessInput(Scenario& CurrentScenario){
     switch(CurrentMode){
         case UIMode::POPUP:{
             CurrentModeStr = "POPUP";
+            CurrentScenario.MissAudioEnabled = false;
             if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
                 CurrentScenario.Popup.Enabled = false;
                 CurrentMode = UIMode::CANNON;
@@ -183,6 +185,7 @@ void UI::ProcessInput(Scenario& CurrentScenario){
 
         case UIMode::DEVELOPER:{
             CurrentModeStr = "DEVELOPER";
+            CurrentScenario.MissAudioEnabled = false;
             if(IsKeyPressed(KEY_P)){
                 CurrentScenario.Popup.Text = "Test Popup";
                 CurrentScenario.Popup.Enabled = true;
@@ -262,6 +265,7 @@ void UI::ProcessInput(Scenario& CurrentScenario){
 
         case UIMode::CANNON:{
             CurrentModeStr = "CANNON";
+            CurrentScenario.MissAudioEnabled = true;
             if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
                 if(CurrentScenario.BallCannon.BallsRemaining>0 && !CurrentScenario.BallCannon.MouseColliding){
                     Vector2 ballVelocity;
@@ -283,6 +287,8 @@ void UI::ProcessInput(Scenario& CurrentScenario){
                     Vector2 ballPosition = {CurrentScenario.BallCannon.PointerPoint.x + (normX*spawnOffsetFactor), CurrentScenario.BallCannon.PointerPoint.y + (normY*spawnOffsetFactor)};
 
                     ballVelocity = {normX*CurrentScenario.BallCannon.Strength, normY*CurrentScenario.BallCannon.Strength};
+
+                    CurrentScenario.Sounds.Play(CurrentScenario.Sounds.Cannon);
 
                     CurrentScenario.NewBall(Ball{ballPosition, ballVelocity, 10, WHITE});
                     

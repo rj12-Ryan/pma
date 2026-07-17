@@ -10,13 +10,19 @@ void Scenario::NewBall(Ball ball){
     BallLookup[b.ID] = index;
 }
 
-void Scenario::RemoveBall(BallID id){
+void Scenario::RemoveBall(BallID id, bool playMissSound){
     std::vector<PegID> pegsHit = GetBall(id).PegsHit;
     if(!pegsHit.empty()){
         for(PegID p : pegsHit){
             RemovePeg(p);
+            Sounds.Play(Sounds.Poof);
         }
     }
+
+    if(pegsHit.empty() && MissAudioEnabled && playMissSound){
+        Sounds.Play(Sounds.Miss);
+    }
+
     size_t index = BallLookup.at(id);
 
     size_t last = Balls.size() - 1;
@@ -61,7 +67,7 @@ Wall& Scenario::GetWall(WallID id){
 
 void Scenario::ClearBalls(){
     while (!Balls.empty()){
-        RemoveBall(Balls.back().ID);
+        RemoveBall(Balls.back().ID, false);
     }
 }
 

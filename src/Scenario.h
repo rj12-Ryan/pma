@@ -12,6 +12,7 @@
 #include "Peg.h"
 #include "Basket.h"
 #include "Cannon.h"
+#include "Audio.h"
 
 class Scenario{
     private:
@@ -45,13 +46,14 @@ class Scenario{
         std::unordered_map<WallID, size_t> WallLookup;
         std::unordered_map<PegID, size_t> PegLookup;
 
+        AudioEngine Sounds = AudioEngine("src/resources/sounds");
 
         BallID NextBallID = 1;
         PegID NextPegID = 1;
         WallID NextWallID =1;
 
         void NewBall(Ball ball);
-        void RemoveBall(BallID id);
+        void RemoveBall(BallID id, bool isBasket);
         Ball& GetBall(BallID);
         void NewWall(Wall wall);
         void RemoveWall(WallID id);
@@ -72,6 +74,7 @@ class Scenario{
             Vector2 Size = {500, 200};
         };
         PopupMessage Popup;
+        bool MissAudioEnabled = false;
 };
 
 #endif

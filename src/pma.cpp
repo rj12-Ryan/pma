@@ -25,6 +25,9 @@ int main(){
     //LOAD SCENARIO
     CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(ui.DesiredScenario), ui.WindowX(), ui.WindowY());
 
+    //INIT AUDIO
+    CurrentScenario.Sounds.LoadSounds();
+
     //GENTLEMEN... START YOUR ENGINE
     PhysicsEngine engine(GRAVITY, 1.0f/TARGET_PHYSICS_PER_SECOND, CurrentScenario);
  

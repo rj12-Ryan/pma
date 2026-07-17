@@ -65,6 +65,7 @@ void PhysicsEngine::_ballWallCollision(){
         
         for(Ball& ball : CurrentScenario.Balls){
            if(CheckCollisionCircleRec(ball.Position,ball.Radius,r)){
+            CurrentScenario.Sounds.Play(CurrentScenario.Sounds.BallWall);
             float dy = DT * ball.Velocity.y;
             float dx = DT * ball.Velocity.x;
 
@@ -94,11 +95,12 @@ void PhysicsEngine::_ballBasketCollision(){
     toRemove.reserve(CurrentScenario.Balls.size());
     for(Ball& ball : CurrentScenario.Balls){
            if(CheckCollisionCircleRec(ball.Position,ball.Radius,r)){
+                CurrentScenario.Sounds.Play(CurrentScenario.Sounds.BallBasket);
                 toRemove.push_back(ball.ID);
            }
     }
     for(BallID id : toRemove){
-        CurrentScenario.RemoveBall(id);
+        CurrentScenario.RemoveBall(id, false);
         CurrentScenario.BallCannon.BallsRemaining++;
     }
 }
@@ -112,6 +114,8 @@ void PhysicsEngine::_ballPegCollision(){
             float minDistance = ball.Radius + peg.Radius;
             
             if (distance<minDistance){
+                CurrentScenario.Sounds.Play(CurrentScenario.Sounds.BallPeg);
+
                 if(!peg.Hit){
                     peg.Hit = true;
                     ball.PegsHit.push_back(peg.ID);
