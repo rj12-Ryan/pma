@@ -17,6 +17,8 @@ class AudioEngine{
         Sound Poof;
         Sound Miss;
         Sound Notes[5];
+        Sound OneLeft;
+        Music Background;
 
         void Play(Sound);
         void LoadSounds();

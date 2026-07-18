@@ -19,6 +19,12 @@ void AudioEngine::LoadSounds(){
     Cannon = LoadSound((SoundsFolder + "/cannon.mp3").c_str());
     Poof = LoadSound((SoundsFolder + "/poof.mp3").c_str());
     Miss = LoadSound((SoundsFolder + "/miss.mp3").c_str());
+    OneLeft = LoadSound((SoundsFolder + "/oneLeft.mp3").c_str());
+    
+    Background = LoadMusicStream((SoundsFolder + "/background.mp3").c_str());
+    Background.looping = true;
+    PlayMusicStream(Background);
+
 
     Notes[0] = LoadSound((SoundsFolder + "/notes/A.mp3").c_str());
     Notes[1] = LoadSound((SoundsFolder + "/notes/C.mp3").c_str());

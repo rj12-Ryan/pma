@@ -32,6 +32,7 @@ int main(){
     PhysicsEngine engine(GRAVITY, 1.0f/TARGET_PHYSICS_PER_SECOND, CurrentScenario);
  
     while(!WindowShouldClose()){
+        UpdateMusicStream(CurrentScenario.Sounds.Background);
         BeginDrawing();
         ClearBackground(BLANK);
         ui.ProcessInput(CurrentScenario);

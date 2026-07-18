@@ -5,6 +5,11 @@
 #include <ranges>
 #include <cmath>
 #include<string>
+#include <format>
+#include <iostream>
+#include <sstream>
+#include <locale>
+
 
 UI::UI(int windowX, int windowY, bool statusBarEnabled, int statusBarHeight, int desiredScenario)
     : _windowX(windowX), _windowY(windowY), _statusBarEnabled(statusBarEnabled), DesiredScenario(desiredScenario), _statusBarHeight(statusBarHeight) 
@@ -167,7 +172,10 @@ void UI::Draw(Scenario& CurrentScenario){
 
     //Draw Score
     //TODO: Allow for scoreboard location and size to be defined in PMA file
-    std::string scoreStr = "SCORE: " + std::to_string(CurrentScenario.GetScore());
+    std::stringstream ss;
+    ss.imbue(std::locale(""));
+    ss << CurrentScenario.GetScore();
+    std::string scoreStr = "SCORE: " + ss.str();
     DrawText(scoreStr.c_str(), 60, 30, 40, WHITE);
 
     if(_statusBarEnabled){
@@ -301,6 +309,10 @@ void UI::ProcessInput(Scenario& CurrentScenario){
 
                     CurrentScenario.NewBall(Ball{ballPosition, ballVelocity, 10, WHITE});
                     
+                    if(CurrentScenario.BallCannon.BallsRemaining == 2){
+                        CurrentScenario.Sounds.Play(CurrentScenario.Sounds.OneLeft);
+                    }
+
                     CurrentScenario.BallCannon.BallsRemaining--;
                 }
                 

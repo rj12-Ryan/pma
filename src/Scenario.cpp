@@ -30,11 +30,11 @@ void Scenario::RemoveBall(BallID id, bool playMissSound){
             
             switch(peg.CurrentPegType){
                 case Peg::PegType::DEFAULT:{
-                    AddScore(10 * mult);
+                    AddScore(100 * mult);
                     break;
                 }
                 case Peg::PegType::TARGET:{
-                    AddScore(20 * mult);
+                    AddScore(200 * mult);
                     break;
                 }
             }
