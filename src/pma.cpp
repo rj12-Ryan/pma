@@ -32,13 +32,13 @@ int main(){
     PhysicsEngine engine(GRAVITY, 1.0f/TARGET_PHYSICS_PER_SECOND, CurrentScenario);
 
     RenderTexture2D sceneTexture = LoadRenderTexture(ui.WindowX(), ui.WindowY() + ui._statusBarHeight);
-    SetTextureFilter(sceneTexture.texture, TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(sceneTexture.texture, TEXTURE_FILTER_BILINEAR);
 
     //BACKGROUND TEXTURE
     Texture bgTexture = LoadTextureFromImage(LoadImage("src/resources/textures/background.png"));
     Rectangle bgSourceRect = { 0.0f, 0.0f, (float)bgTexture.width, (float)bgTexture.height };
     Rectangle bgDestRec = {0, 0, ui.WindowX(), ui.WindowY()};
-    SetTextureFilter(bgTexture, TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(bgTexture, TEXTURE_FILTER_BILINEAR);
 
     while(!WindowShouldClose()){
         UpdateMusicStream(CurrentScenario.Sounds.Background);

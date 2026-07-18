@@ -32,6 +32,7 @@ class UI{
         void ProcessInput(Scenario&);
         int DesiredScenario;
         int _statusBarHeight;
+        Font customFont;
 };
 
 #endif

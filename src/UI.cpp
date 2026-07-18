@@ -32,6 +32,8 @@ void UI::InitPMAWindow(){
     else{
         InitWindow(WindowX(), WindowY(), "Raylib");
     }   
+    customFont = LoadFontEx("src/resources/fonts/timeless.ttf", 48, NULL, 0);
+    SetTextureFilter(customFont.texture, TEXTURE_FILTER_BILINEAR);
 }
 
 void UI::ToggleStatus(){
@@ -64,13 +66,13 @@ void UI::_drawPopup(Scenario& CurrentScenario){
     Vector2 size = CurrentScenario.Popup.Size;
     std::string text = CurrentScenario.Popup.Text;
 
-    Vector2 topCorner = {(WindowX()/2)-(size.x/2), (20)};
-    DrawRectangleV(topCorner, size, GRAY);
+    Vector2 topCorner = {(WindowX()/2)-(size.x/2), WindowY()/2 - (size.y/2)};
+    DrawRectangleV(topCorner, size, GetColor(0xAFAFAFDF));
     
     const int FONTSIZE = 40;
     Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), FONTSIZE, 1);
-    Vector2 textPos = {(WindowX()/2)-(textSize.x/2)-2, 20+size.y/2-(textSize.y/2)};
-    DrawText(text.c_str(),textPos.x, textPos.y, FONTSIZE, BLACK);
+    Vector2 textPos = {(WindowX()/2)-(textSize.x/2)-2, topCorner.y+size.y/2-(textSize.y/2)};
+    DrawTextEx(customFont, text.c_str(), {textPos.x, textPos.y}, FONTSIZE, 2, BLACK);
 }
 
 
@@ -118,13 +120,13 @@ void UI::Draw(Scenario& CurrentScenario){
     //Draw Cannon
     if(CurrentScenario.BallCannon.Rendered){
         DrawCircleV(CurrentScenario.BallCannon.Position, CurrentScenario.BallCannon.BaseRad, CurrentScenario.BallCannon.CannonColor);
-        DrawCircleV(CurrentScenario.BallCannon.PointerPoint, CurrentScenario.BallCannon.PointerRad, RED);
+        DrawCircleV(CurrentScenario.BallCannon.PointerPoint, CurrentScenario.BallCannon.PointerRad, GetColor(0x5c3f4aAF));
         
         const int numFontSize = 50;
         std::string numStr = std::to_string(CurrentScenario.BallCannon.BallsRemaining);
         int textWidth = MeasureText(numStr.c_str(), numFontSize);
 
-        DrawText(numStr.c_str(), CurrentScenario.BallCannon.Position.x - (textWidth/2), CurrentScenario.BallCannon.Position.y + 5, numFontSize, BLACK);
+        DrawTextEx(customFont, numStr.c_str(), {CurrentScenario.BallCannon.Position.x - (textWidth/2), CurrentScenario.BallCannon.Position.y}, numFontSize, 3, BLACK);
 
         bool collided = false;
 
@@ -158,7 +160,7 @@ void UI::Draw(Scenario& CurrentScenario){
                             collided = true;
                         }
                     }
-                    DrawCircleV(drawPoint, 5, WHITE);
+                    DrawCircleV(drawPoint, 5, GetColor(0xAFAFAFDF));
                 }
             }
         }
@@ -177,7 +179,8 @@ void UI::Draw(Scenario& CurrentScenario){
     ss.imbue(std::locale(""));
     ss << CurrentScenario.GetScore();
     std::string scoreStr = "SCORE: " + ss.str();
-    DrawText(scoreStr.c_str(), 60, 30, 40, WHITE);
+    //DrawText(scoreStr.c_str(), 60, 5, 40, GetColor(0xFFFFFFAF));
+    DrawTextEx(customFont, scoreStr.c_str(), {60,5}, 40, 2.0f, GetColor(0xFFFFFFAF));
 
     if(_statusBarEnabled){
         _drawStatusBar(CurrentScenario);
@@ -190,7 +193,7 @@ void UI::ProcessInput(Scenario& CurrentScenario){
         case UIMode::POPUP:{
             CurrentModeStr = "POPUP";
             CurrentScenario.MissAudioEnabled = false;
-            if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+            if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_R)){
                 CurrentScenario.Popup.Enabled = false;
                 CurrentMode = UIMode::CANNON;
                 CurrentScenario.LoadScenario(static_cast<Scenario::SavedScenarios>(DesiredScenario), WindowX(), WindowY());
@@ -286,7 +289,6 @@ void UI::ProcessInput(Scenario& CurrentScenario){
                     Vector2 ballVelocity;
                     Vector2 p1 = CurrentScenario.BallCannon.PointerPoint;
                     Vector2 p2 = GetMousePosition();
-                    printf("%f x %f\n", p2.x, p2.y);
                     float dx = p2.x - p1.x;
                     float dy = p2.y - p1.y;
 
