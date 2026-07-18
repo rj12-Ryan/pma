@@ -32,21 +32,34 @@ int main(){
     PhysicsEngine engine(GRAVITY, 1.0f/TARGET_PHYSICS_PER_SECOND, CurrentScenario);
 
     RenderTexture2D sceneTexture = LoadRenderTexture(ui.WindowX(), ui.WindowY() + ui._statusBarHeight);
-    SetTextureFilter(sceneTexture.texture, TEXTURE_FILTER_BILINEAR);
+    SetTextureFilter(sceneTexture.texture, TEXTURE_FILTER_TRILINEAR);
+
+    //BACKGROUND TEXTURE
+    Texture bgTexture = LoadTextureFromImage(LoadImage("src/resources/textures/background.png"));
+    Rectangle bgSourceRect = { 0.0f, 0.0f, (float)bgTexture.width, (float)bgTexture.height };
+    Rectangle bgDestRec = {0, 0, ui.WindowX(), ui.WindowY()};
+    SetTextureFilter(bgTexture, TEXTURE_FILTER_TRILINEAR);
 
     while(!WindowShouldClose()){
         UpdateMusicStream(CurrentScenario.Sounds.Background);
 
         BeginTextureMode(sceneTexture);
-        ClearBackground(BLACK);
-        ui.ProcessInput(CurrentScenario);
-        engine.Step();
-        ui.Draw(CurrentScenario);
+            ClearBackground(BLANK);
+            ui.ProcessInput(CurrentScenario);
+            engine.Step();
+            ui.Draw(CurrentScenario);
         EndTextureMode();
 
         BeginDrawing();
            ClearBackground(BLACK);
-           DrawTextureRec(sceneTexture.texture, {0, 0.0f, (float)sceneTexture.texture.width, -(float)sceneTexture.texture.height}, {0,0}, WHITE);
+                BeginBlendMode(BLEND_ALPHA);
+                    //draw bg
+                    DrawTexturePro(bgTexture, bgSourceRect, bgDestRec, {0,0}, 0, WHITE);
+                    //draw scene shadow
+                    DrawTextureRec(sceneTexture.texture, {2.0f, 2.0f, (float)sceneTexture.texture.width, -(float)sceneTexture.texture.height}, {0,0}, (Color){ 0, 0, 0, 150 });
+                    //draw scene
+                    DrawTextureRec(sceneTexture.texture, {0, 0.0f, (float)sceneTexture.texture.width, -(float)sceneTexture.texture.height}, {0,0}, WHITE);
+                EndBlendMode();
         EndDrawing();
     }
     CloseWindow();
