@@ -10,7 +10,6 @@ class Scenario;
 class UI{
     private:
         bool _statusBarEnabled;
-        int _statusBarHeight;
         int _windowX;
         int _windowY;
         void _drawStatusBar(Scenario&);
@@ -32,6 +31,7 @@ class UI{
         void Draw(Scenario&);
         void ProcessInput(Scenario&);
         int DesiredScenario;
+        int _statusBarHeight;
 };
 
 #endif

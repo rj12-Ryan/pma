@@ -46,7 +46,7 @@ void UI::ToggleStatus(){
 
 void UI::_drawStatusBar(Scenario& CurrentScenario)
 {
-    int windowY = WindowY();
+    int windowY = 1080;
     DrawRectangle(0, windowY, WindowX(), _statusBarHeight, DARKGRAY);
     DrawFPS(20, (windowY + 0.5*_statusBarHeight - 10));
     std::string ballCountStr = "BALLS: ";
@@ -54,10 +54,10 @@ void UI::_drawStatusBar(Scenario& CurrentScenario)
     Color c;
     if(CurrentScenario.Balls.size()>99) {c = YELLOW;} else {c = GREEN;}
     DrawText(ballCountStr.c_str(), 150, (windowY + 0.5*_statusBarHeight - 10), 20, c);
-    DrawText(CurrentModeStr.c_str(), 300, (windowY + 0.5*_statusBarHeight - 10), 20, BLACK);
+    DrawText(CurrentModeStr.c_str(), 300, (windowY + 0.5*_statusBarHeight - 10), 20, WHITE);
     std::string scenStr = "LOADED SCENARIO: " + CurrentScenario.LoadedScenarioName;
     int scenStrWidth = MeasureText(scenStr.c_str(), 20);
-    DrawText(scenStr.c_str(), WindowX() - 10 - scenStrWidth, (windowY + 0.5*_statusBarHeight - 10), 20, BLACK);
+    DrawText(scenStr.c_str(), WindowX() - 10 - scenStrWidth, (windowY + 0.5*_statusBarHeight - 10), 20, WHITE);
 }
 
 void UI::_drawPopup(Scenario& CurrentScenario){
@@ -285,6 +285,7 @@ void UI::ProcessInput(Scenario& CurrentScenario){
                     Vector2 ballVelocity;
                     Vector2 p1 = CurrentScenario.BallCannon.PointerPoint;
                     Vector2 p2 = GetMousePosition();
+                    printf("%f x %f\n", p2.x, p2.y);
                     float dx = p2.x - p1.x;
                     float dy = p2.y - p1.y;
 

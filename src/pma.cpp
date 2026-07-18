@@ -30,14 +30,23 @@ int main(){
 
     //GENTLEMEN... START YOUR ENGINE
     PhysicsEngine engine(GRAVITY, 1.0f/TARGET_PHYSICS_PER_SECOND, CurrentScenario);
- 
+
+    RenderTexture2D sceneTexture = LoadRenderTexture(ui.WindowX(), ui.WindowY() + ui._statusBarHeight);
+    SetTextureFilter(sceneTexture.texture, TEXTURE_FILTER_BILINEAR);
+
     while(!WindowShouldClose()){
         UpdateMusicStream(CurrentScenario.Sounds.Background);
-        BeginDrawing();
-        ClearBackground(BLANK);
+
+        BeginTextureMode(sceneTexture);
+        ClearBackground(BLACK);
         ui.ProcessInput(CurrentScenario);
         engine.Step();
         ui.Draw(CurrentScenario);
+        EndTextureMode();
+
+        BeginDrawing();
+           ClearBackground(BLACK);
+           DrawTextureRec(sceneTexture.texture, {0, 0.0f, (float)sceneTexture.texture.width, -(float)sceneTexture.texture.height}, {0,0}, WHITE);
         EndDrawing();
     }
     CloseWindow();
