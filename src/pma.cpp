@@ -56,7 +56,9 @@ int main(){
                     //draw bg
                     DrawTexturePro(bgTexture, bgSourceRect, bgDestRec, {0,0}, 0, WHITE);
                     //draw scene shadow
-                    DrawTextureRec(sceneTexture.texture, {2.0f, 2.0f, (float)sceneTexture.texture.width, -(float)sceneTexture.texture.height}, {0,0}, (Color){ 0, 0, 0, 150 });
+                    DrawTextureRec(sceneTexture.texture, {2.0f, 2.0f, (float)sceneTexture.texture.width, -(float)sceneTexture.texture.height}, {0,0}, (Color){ 0, 0, 0, 50 });
+                    //draw scene shadow2
+                    DrawTextureRec(sceneTexture.texture, {-0.5f, -2.0f, (float)sceneTexture.texture.width, -(float)sceneTexture.texture.height}, {0,0}, (Color){ 0, 0, 0, 255});
                     //draw scene
                     DrawTextureRec(sceneTexture.texture, {0, 0.0f, (float)sceneTexture.texture.width, -(float)sceneTexture.texture.height}, {0,0}, WHITE);
                 EndBlendMode();
